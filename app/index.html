@@ -324,7 +324,7 @@ const RPL_ROWS=[
 ];
 
 /* ---------- state ---------- */
-const KEY='gennext-events-v3';
+const KEY='gennext-events-v4';
 let S;
 function seed(){
   const tpl={};
@@ -452,9 +452,7 @@ function seed(){
   pm('Main creative – approval','Design','Key visual','Saransh','','2026-10-17','WIP','Submitted to the events team. Approval due by 17 Oct.');
   pm('Dossier','Design','Dossier','Saransh','','2026-10-24','To start','Starts after the main creative is approved.');
   pm('Thumbnails','Design','Thumbnails','Saransh','','2026-10-24','To start','Starts after the main creative is approved.');
-  pm('Opening ceremony – show concepts to Achira','Programming','Concept','Shweta','','2026-10-17','WIP','Brainstorming stage. Present to Achira and get her approval.');
-  pm('Opening ceremony – finalise core idea','Programming','Concept','Shweta','','2026-10-20','To start','');
-  pm('Opening ceremony – Grand rehearsal (GR)','Programming','Rehearsal','Shweta','','2026-11-30','To start','Date to be confirmed.');
+  pm('Opening ceremony','Programming','Concept','Shweta','','2026-10-17','WIP','Brainstorming. Milestones: show to Achira & get approval by 17 Oct → finalise core idea by 20 Oct → Grand rehearsal (GR) 30 Nov (tentative).');
 }
 function genTasks(e){
   for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:''});
