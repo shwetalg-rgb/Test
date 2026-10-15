@@ -266,7 +266,7 @@ const SS_ROWS=[
  ['Registration closed','Marketing - Social','Reel','External','Saransh','Anjal',-5],
  ['Finalise food venue','Programming','Negotiate','External','Shweta','Anjal',-4],
  ['Collect money for confirmation','Operations','Excel','External','Shweta','Anjal',-4],
- ['Briefing our Mumukshus & team division','Operations','Meeting','Internal','Saransh','Shweta',-4],
+ ['Briefing our Mumukshus & team division','Operations','Meeting','Internal','Shweta','Saransh',-4],
  ['Location share','Marketing - Information','Static + link','External','Saransh','Anjal',-2],
  ['Snacks for the team','Procurement','—','Internal','Shweta','Shriya',-2],
  ['See you tomorrow','Marketing - Social','Reel','External','Saransh','Chirag',-1],
@@ -314,7 +314,7 @@ const RPL_ROWS=[
  ['Save the date','Marketing - Social','Static','External','Saransh','Devanshi',-30],
  ['Jerseys & kit – quotes','Procurement','Quotations','Internal','Shweta','Param',-28],
  ['Team reveal reels','Marketing - Social','Reels','External','Saransh','Chirag',-20],
- ['Ground, umpires & scoreboard','Operations','—','Internal','Param','Shweta',-14],
+ ['Ground, umpires & scoreboard','Operations','—','Internal','Shweta','Param',-14],
  ['Trophies & medals','Procurement','Props','Internal','Shweta','Param',-10],
  ['Fixture poster','Design','Static','External','Saransh','Devanshi',-7],
  ['Things to carry – first aid, water, kit','Operations','Checklist','Internal','Shweta','Shriya',-2],
@@ -324,7 +324,7 @@ const RPL_ROWS=[
 ];
 
 /* ---------- state ---------- */
-const KEY='gennext-events-v2';
+const KEY='gennext-events-v3';
 let S;
 function seed(){
   const tpl={};
@@ -332,8 +332,8 @@ function seed(){
   for(const k of ['prem','anand','sarvarpan','guru','paryushan']) tpl[k]=RC_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
   tpl.rpl=RPL_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
   const events=[
-   {id:'e0',type:'smilescapes',name:'Smilescapes · 26 Sep',date:'2026-09-26',venue:'Mumbai'},
-   {id:'e1',type:'smilescapes',name:'Smilescapes · Cycling by the Sea',date:'2026-10-10',venue:'Marine Drive → Breach Candy, Mumbai'},
+   {id:'e0',type:'smilescapes',name:'Pause at the Promenade',date:'2026-09-26',venue:'Mumbai'},
+   {id:'e1',type:'smilescapes',name:'Smilescapes on Wheels',date:'2026-10-10',venue:'Marine Drive → Breach Candy, Mumbai'},
    {id:'e2',type:'smilescapes',name:'Smilescapes · 31 Oct',date:'2026-10-31',venue:'To be finalised, Mumbai'},
    {id:'e3',type:'prem',name:'Prem Mahotsav 2026',date:'2026-12-31',venue:'RC, Khopoli'},
    {id:'e4',type:'rpl',name:'RPL 2027',date:'2027-01-23',venue:'RC grounds, Khopoli'},
@@ -396,19 +396,19 @@ function seed(){
       {id:uid(),title:'Lantern walk to the main hall',desc:'Every attendee carries a small diya lantern from the gate to the hall at dusk; volunteers line the path humming bhakti.',tags:['Opening ceremony'],status:'Shortlisted',by:'Natasha',ref:'',comments:[{by:'Shweta',t:'Could work for Prem Mahotsav evening 1.'}],used:''},
       {id:uid(),title:'Silent disco seva sorting',desc:'Teams sort donation kits wearing headphones playing the same bhajan. Fun, calm, and useful.',tags:['Activation','Smilescapes activity'],status:'New',by:'Public submission',ref:'',comments:[],used:''},
       {id:uid(),title:'Shadow-play skit on forgiveness',desc:'Backlit screen, 6 actors, story told only through silhouettes and narration. Fits Paryushan Kshamapana.',tags:['Skit'],status:'Shortlisted',by:'Devanshi',ref:'https://www.youtube.com/',comments:[],used:''},
-      {id:uid(),title:'Human alphabet treasure clue',desc:'Teams form letters with their bodies to spell the next clue location.',tags:['Smilescapes activity','Engagement'],status:'Used',by:'Shweta',ref:'',comments:[],used:'Smilescapes · Cycling by the Sea'},
+      {id:uid(),title:'Human alphabet treasure clue',desc:'Teams form letters with their bodies to spell the next clue location.',tags:['Smilescapes activity','Engagement'],status:'Used',by:'Shweta',ref:'',comments:[],used:'Smilescapes on Wheels'},
       {id:uid(),title:'Garba fusion with kids',desc:'Kids lead the first round, adults join. Eight-minute piece, easy steps.',tags:['Dance'],status:'New',by:'Shraddha',ref:'',comments:[],used:''},
       {id:uid(),title:'Gratitude wall booth',desc:'Between sessions: write one line of gratitude on a leaf, hang it on a tree installation.',tags:['Filler / booth','Décor'],status:'New',by:'Public submission',ref:'',comments:[],used:''},
     ],
     moments:[
-      {id:uid(),cap:'Cycles lined up at sunrise',ev:'Smilescapes · Cycling by the Sea',by:'Anjal',hue:200,h:1.25,ok:true},
-      {id:uid(),cap:'The pause by the sea',ev:'Smilescapes · Cycling by the Sea',by:'Natasha',hue:215,h:.8,ok:true},
+      {id:uid(),cap:'Cycles lined up at sunrise',ev:'Smilescapes on Wheels',by:'Anjal',hue:200,h:1.25,ok:true},
+      {id:uid(),cap:'The pause by the sea',ev:'Smilescapes on Wheels',by:'Natasha',hue:215,h:.8,ok:true},
       {id:uid(),cap:'Prem Mahotsav lamps, night 2',ev:'Prem Mahotsav 2025',by:'Saransh',hue:28,h:1.4,ok:true},
       {id:uid(),cap:'RPL final – last over',ev:'RPL 2026',by:'Param',hue:140,h:.9,ok:true},
       {id:uid(),cap:'Anand Mahotsav rangoli team',ev:'Anand Mahotsav 2026',by:'Shriya',hue:330,h:1.1,ok:true},
-      {id:uid(),cap:'Breakfast stories',ev:'Smilescapes · Cycling by the Sea',by:'Devanshi',hue:40,h:1,ok:true},
+      {id:uid(),cap:'Breakfast stories',ev:'Smilescapes on Wheels',by:'Devanshi',hue:40,h:1,ok:true},
       {id:uid(),cap:'Guru Purnima flowers',ev:'Guru Purnima 2026',by:'Shraddha',hue:48,h:1.3,ok:true},
-      {id:uid(),cap:'Treasure hunt – human alphabet',ev:'Smilescapes · Cycling by the Sea',by:'Chirag',hue:185,h:.85,ok:false},
+      {id:uid(),cap:'Treasure hunt – human alphabet',ev:'Smilescapes on Wheels',by:'Chirag',hue:185,h:.85,ok:false},
     ],
     rules:[
       {id:uid(),cat:'Logo',text:'RC logo sits top-left or top-centre with clear space equal to the height of the logo mark. Never stretch, recolour or add effects.'},
@@ -432,7 +432,7 @@ function seed(){
     },
   };
   S.annual=seedAnnual();
-  S.expenses.push({id:uid(),ev:'e1',item:'Reel shoot & edit – Cycling by the Sea',head:'Content shoot & edit',vendor:'',quote:5000,amt:5000,by:'Saransh',bill:true,file:'shoot-invoice.pdf',date:'2026-10-11'},{id:uid(),ev:'e1',item:'WhatsApp campaign – registrations',head:'WhatsApp',vendor:'',quote:2068,amt:2068,by:'Saransh',bill:true,file:'interakt.pdf',date:'2026-09-27'},{id:uid(),ev:'e2',item:'Experience giveaways – 120 pcs',head:'Experience giveaways',vendor:'',quote:1800,amt:1800,by:'Shriya',bill:false,file:'',date:'2026-10-14'},{id:uid(),ev:'e1',item:'Parking & tolls',head:'Travel',vendor:'',quote:0,amt:650,by:'Shweta',bill:false,file:'',date:'2026-10-10'},{id:uid(),ev:'e3',item:'Volunteer badges (sample)',head:'Badges',vendor:'v3',quote:4000,amt:3800,by:'Shriya',bill:true,file:'badges.pdf',date:'2026-10-13'});
+  S.expenses.push({id:uid(),ev:'e1',item:'Reel shoot & edit – Smilescapes on Wheels',head:'Content shoot & edit',vendor:'',quote:5000,amt:5000,by:'Saransh',bill:true,file:'shoot-invoice.pdf',date:'2026-10-11'},{id:uid(),ev:'e1',item:'WhatsApp campaign – registrations',head:'WhatsApp',vendor:'',quote:2068,amt:2068,by:'Saransh',bill:true,file:'interakt.pdf',date:'2026-09-27'},{id:uid(),ev:'e2',item:'Experience giveaways – 120 pcs',head:'Experience giveaways',vendor:'',quote:1800,amt:1800,by:'Shriya',bill:false,file:'',date:'2026-10-14'},{id:uid(),ev:'e1',item:'Parking & tolls',head:'Travel',vendor:'',quote:0,amt:650,by:'Shweta',bill:false,file:'',date:'2026-10-10'},{id:uid(),ev:'e3',item:'Volunteer badges (sample)',head:'Badges',vendor:'v3',quote:4000,amt:3800,by:'Shriya',bill:true,file:'badges.pdf',date:'2026-10-13'});
   for(const e of events) genTasks(e);
   // seed statuses
   let k=0;
@@ -449,12 +449,12 @@ function seed(){
   S.tasks=S.tasks.filter(t=>!(t.ev==='e3'&&t.due<TODAY));
   for(const t of S.tasks) if(t.ev==='e3') t.st='To start';
   const pm=(t,dept,col,l1,l2,due,st,note)=>S.tasks.push({id:uid(),ev:'e3',t,dept,col,x:'Internal',l1,l2,o:diff(due,'2026-12-31'),due,edited:false,st,note});
-  pm('Main creative – approval','Design','Key visual','Saransh','Devanshi','2026-10-17','WIP','Submitted to the events team. Approval due by 17 Oct.');
-  pm('Dossier','Design','Dossier','Saransh','Devanshi','2026-10-24','To start','Starts after the main creative is approved.');
-  pm('Thumbnails','Design','Thumbnails','Saransh','Devanshi','2026-10-24','To start','Starts after the main creative is approved.');
-  pm('Opening ceremony – show concepts to Achira','Programming','Concept','Shweta','Natasha','2026-10-17','WIP','Brainstorming stage. Present to Achira and get her approval.');
-  pm('Opening ceremony – finalise core idea','Programming','Concept','Shweta','Natasha','2026-10-20','To start','');
-  pm('Opening ceremony – GR (general rehearsal)','Programming','Rehearsal','Shweta','Natasha','2026-11-30','To start','Date to be confirmed.');
+  pm('Main creative – approval','Design','Key visual','Saransh','','2026-10-17','WIP','Submitted to the events team. Approval due by 17 Oct.');
+  pm('Dossier','Design','Dossier','Saransh','','2026-10-24','To start','Starts after the main creative is approved.');
+  pm('Thumbnails','Design','Thumbnails','Saransh','','2026-10-24','To start','Starts after the main creative is approved.');
+  pm('Opening ceremony – show concepts to Achira','Programming','Concept','Shweta','','2026-10-17','WIP','Brainstorming stage. Present to Achira and get her approval.');
+  pm('Opening ceremony – finalise core idea','Programming','Concept','Shweta','','2026-10-20','To start','');
+  pm('Opening ceremony – Grand rehearsal (GR)','Programming','Rehearsal','Shweta','','2026-11-30','To start','Date to be confirmed.');
 }
 function genTasks(e){
   for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:''});
@@ -474,7 +474,7 @@ function seedAnnual(){const L=[];
   r(4,'Events','—','Petty expenses (Adbhutam club idea)','One-time',0,'',0,0,20000,0);
   const P=[];const it=(item,month,title,ev,qty,unit,amt)=>{const l=L.find(x=>x.item===item);P.push({id:uid(),line:l.id,month,title,ev:ev||'',qty,unit,amt:amt??Math.round(qty*unit)})};
   it('Envato Elements','2026-04','Annual subscription','',1,20000);
-  ['2026-09','2026-10','2026-10','2027-01','2027-02'].forEach((m,i)=>it('Experience giveaways',m,'Giveaways – '+['Smilescapes · 26 Sep','Smilescapes · Cycling by the Sea','Smilescapes · 31 Oct','Smilescapes · Jan','Smilescapes · Feb'][i],['e0','e1','e2','',''][i],100,15));
+  ['2026-09','2026-10','2026-10','2027-01','2027-02'].forEach((m,i)=>it('Experience giveaways',m,'Giveaways – '+['Pause at the Promenade','Smilescapes on Wheels','Smilescapes · 31 Oct','Smilescapes · Jan','Smilescapes · Feb'][i],['e0','e1','e2','',''][i],100,15));
   it('Plant saplings','2026-06','Saplings – monsoon Smilescape','',25,600);it('Plant saplings','2026-08','Saplings – Independence Day Smilescape','',25,600);
   it('Marketing material','2026-10','Standees & flyers – Oct Smilescapes','e1',10,500);it('Marketing material','2026-12','Standees & flyers – Dec drive','',15,500);
   ['04','05','06','07','08','09','10','11','12','01','02','03'].forEach(m=>{const y=+m>=4?2026:2027;it('WhatsApp',`${y}-${m}`,'Monthly campaign – '+MON[+m-1],m==='10'?'e1':'',1,2068)});
