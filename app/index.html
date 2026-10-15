@@ -460,8 +460,16 @@ function seedAnnual(){const L=[];
   r(3,'Project Smilestones','Online promotions','META Ads','Campaign based',0,'',0,0,96000,0);
   r(3,'Project Smilestones','Online promotions','Content shoot & edit','Campaign based',20,'campaigns',5000,100000,70000,0);
   r(4,'Events','—','Petty expenses (Adbhutam club idea)','One-time',0,'',0,0,20000,20000);
-  return {v:2,title:'Gennext Budget Summary',fy:'2026-27',period:'Apr 2026 – Mar 2027',submitted:'3 May 2026 · Shweta Jain',approvedTotal:250000,approvedOn:'5 May 2026',lines:L}}
-function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(!S.annual||S.annual.v!==2)S.annual=seedAnnual();return}}catch(e){} seed()}
+  const P=[];const it=(item,month,title,ev,qty,unit,amt)=>{const l=L.find(x=>x.item===item);P.push({id:uid(),line:l.id,month,title,ev:ev||'',qty,unit,amt:amt??Math.round(qty*unit)})};
+  it('Envato Elements','2026-04','Annual subscription','',1,20000);
+  ['2026-10','2026-10','2027-01','2027-02','2027-03'].forEach((m,i)=>it('Experience giveaways',m,'Giveaways – '+['Smilescapes · Cycling by the Sea','Smilescapes · 31 Oct','Smilescapes · Jan','Smilescapes · Feb','Smilescapes · Mar'][i],i===0?'e1':i===1?'e2':'',100,15));
+  it('Plant saplings','2026-06','Saplings – monsoon Smilescape','',25,600);it('Plant saplings','2026-08','Saplings – Independence Day Smilescape','',25,600);
+  it('Marketing material','2026-10','Standees & flyers – Oct Smilescapes','e1',10,500);it('Marketing material','2026-12','Standees & flyers – Dec drive','',15,500);
+  ['04','05','06','07','08','09','10','11','12','01','02','03'].forEach(m=>{const y=+m>=4?2026:2027;it('WhatsApp',`${y}-${m}`,'Monthly campaign – '+MON[+m-1],m==='10'?'e1':'',1,2068)});
+  [['2026-06','Q1'],['2026-09','Q2'],['2026-12','Q3'],['2027-03','Q4']].forEach(([m,q])=>it('WhatsApp bulk message',m,q+' bulk send – 15,000 messages','',15000,0.7));
+  ['2026-05','2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12','2027-01','2027-02'].forEach(m=>it('Content shoot & edit',m,'Reels – 2 campaigns · '+MON[+m.slice(5)-1],m==='2026-10'?'e1':'',2,5000));
+  return {v:4,plan:P,title:'Gennext Budget Summary',fy:'2026-27',period:'Apr 2026 – Mar 2027',submitted:'3 May 2026 · Shweta Jain',approvedTotal:250000,approvedOn:'5 May 2026',lines:L}}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(!S.annual||S.annual.v!==4)S.annual=seedAnnual();return}}catch(e){} seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- i18n (labels) ---------- */
@@ -715,7 +723,7 @@ V.expenses=()=>{
       <div class="row">${isAdmin()?`<button class="btn" onclick="reportModal('${exEv}')">${ic('file')}Expense report & bills pack</button>`:''}<button class="btn pri" onclick="addExpense()">${ic('plus')}Log expense</button></div></div>
     ${isAdmin()?`<div class="row" style="gap:24px"><div><div class="eyebrow">Spent</div><div class="num" style="font-size:1.5rem;font-weight:600">${inr(tot)}</div></div><div><div class="eyebrow">Entries</div><div class="num" style="font-size:1.5rem;font-weight:600">${rows.length}</div></div><div><div class="eyebrow">Bills missing</div><div class="num" style="font-size:1.5rem;font-weight:600;${miss?'color:var(--bad)':''}">${miss}</div></div></div>`:`<div class="note">${ic('info')}<div>You see the expenses you logged. Totals and budgets are visible to admins.</div></div>`}
     <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Item</th><th>Budget head</th><th>Vendor</th><th>Quoted</th><th>Actual</th><th>Paid by</th>${isAdmin()?'<th>Annual budget line</th>':''}<th>Bill</th></tr></thead><tbody>
-    ${rows.map(x=>`<tr><td class="num faint">${fmt(x.date)}</td><td style="min-width:180px"><b style="font-weight:600">${esc(x.item)}</b></td><td>${esc(x.head)}</td><td class="muted">${esc(vName(x.vendor))}</td><td class="num muted">${x.quote?inr(x.quote):'—'}</td><td class="num"><b>${inr(x.amt)}</b></td><td>${esc(x.by)}</td>${isAdmin()?`<td><select id="el-${x.id}" aria-label="Budget line" onchange="setMap('${x.id}',this.value)" style="max-width:200px">${lineOpts(x.line||'')}</select>${!lineOf(x)&&x.line!=='none'?' <span class="pill bad">No match</span>':''}</td>`:''}
+    ${rows.map(x=>`<tr><td class="num faint">${fmt(x.date)}</td><td style="min-width:180px"><b style="font-weight:600">${esc(x.item)}</b></td><td>${esc(x.head)}</td><td class="muted">${esc(vName(x.vendor))}</td><td class="num muted">${x.quote?inr(x.quote):'—'}</td><td class="num"><b>${inr(x.amt)}</b></td><td>${esc(x.by)}</td>${isAdmin()?`<td><select id="el-${x.id}" aria-label="Budget line" onchange="setMap('${x.id}',this.value)" style="max-width:200px">${lineOpts(x.pi?'pi:'+x.pi:(x.line||''))}</select>${!lineOf(x)&&x.line!=='none'?' <span class="pill bad">No match</span>':''}</td>`:''}
       <td>${x.bill?`<span class="pill ok">${ic('file','style="width:12px;height:12px"')}${esc(x.file||'Uploaded')}</span>`:`<button class="btn sm" onclick="attachBill('${x.id}')">${ic('up')}Upload bill</button>`}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">No expenses logged yet.</td></tr>'}
     </tbody></table></div>`;
   }
@@ -751,7 +759,7 @@ function addExpense(){modal(`<h2>Log expense</h2>
   ${isAdmin()?`<div class="field"><label for="xl">Counts against (annual budget)</label><select id="xl">${lineOpts('')}</select><span class="faint" style="font-size:.78rem">Auto-match uses this event + budget head. Change it if it belongs elsewhere.</span></div>`:''}
   <div class="field"><label for="xf">Bill (photo or PDF)</label><input type="file" id="xf" accept="image/*,.pdf"></div>
   <div class="row"><button class="btn pri" onclick="saveExpense()">Save expense</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
-function saveExpense(){const f=$('xf').files[0];S.expenses.push({id:uid(),ev:exEv,item:$('xi').value.trim()||'Expense',head:$('xh').value,vendor:$('xv').value,quote:+$('xq').value||0,amt:+$('xa').value||0,by:$('xb').value,bill:!!f,file:f?f.name:'',date:$('xd').value||TODAY,line:$('xl')?$('xl').value:''});closeModal();save();render();toast('Expense saved · added to the budget sheet')}
+function saveExpense(){const f=$('xf').files[0];S.expenses.push({id:uid(),ev:exEv,item:$('xi').value.trim()||'Expense',head:$('xh').value,vendor:$('xv').value,quote:+$('xq').value||0,amt:+$('xa').value||0,by:$('xb').value,bill:!!f,file:f?f.name:'',date:$('xd').value||TODAY,line:$('xl')&&!$('xl').value.startsWith('pi:')?$('xl').value:'',pi:$('xl')&&$('xl').value.startsWith('pi:')?$('xl').value.slice(3):''});closeModal();save();render();toast('Expense saved · added to the budget sheet')}
 function attachBill(id){const inp=document.createElement('input');inp.type='file';inp.accept='image/*,.pdf';inp.onchange=()=>{const f=inp.files[0];if(!f)return;const x=S.expenses.find(e=>e.id===id);x.bill=true;x.file=f.name;save();render();toast('Bill attached')};inp.click()}
 function addVendor(){modal(`<h2>Add vendor</h2><div class="grid g2" style="gap:10px">
   ${[['vn','Name'],['vc','Category'],['vct','Contact person & phone'],['vcity','City'],['vg','GST number']].map(([i,l])=>`<div class="field"><label for="${i}">${l}</label><input type="text" id="${i}"></div>`).join('')}
@@ -781,16 +789,60 @@ function budgetBlock(ev,compact){
    <div class="bar ${r.p>100?'bad':r.p>85?'gd':'ok'}"><i style="width:${Math.min(r.p,100)}%"></i></div></div>`).join('')||'<div class="faint">No budget heads yet. Add sanctioned amounts to start tracking.</div>'}
   </div>`;
 }
-let bTab='annual', annV='', mapQ='all';
+let bTab='annual', annV='', mapQ='all', bSub='sum', focusLine='';
+const budgetHead=(A,tabs)=>`<div class="row between"><div><div class="eyebrow">${esc(A.title)} · ${esc(A.period)}</div><h1>${t('Budget')}</h1></div>
+   <div class="row"><button class="btn" onclick="uploadAnnual()">${ic('up')}Upload approved budget</button><button class="btn pri" onclick="annualReport()">${ic('file')}Budget report</button></div></div>${tabs}
+  <div class="row between"><div class="seg">${[['sum','Summary (approved)'],['break','Line-wise breakdown']].map(x=>`<button class="${bSub===x[0]?'on':''}" onclick="bSub='${x[0]}';render()">${x[1]}</button>`).join('')}</div>
+  <span class="faint" style="font-size:.84rem">${bSub==='sum'?'Click a line item to open its breakdown':'Each approved line split into planned spends by month and event'}</span></div>`;
+function breakdownView(){const A=S.annual;
+  const lines=A.lines.filter(l=>!annV||l.vertical===annV);
+  const totPlan=(A.plan||[]).reduce((a,b)=>a+b.amt,0),totAppr=A.lines.reduce((a,b)=>a+b.approved,0);
+  setTimeout(()=>{if(focusLine){const el=$('bl-'+focusLine);if(el)el.scrollIntoView({block:'start',behavior:'smooth'});focusLine=''}},30);
+  return `<div class="note">${ic('info')}<div>This sheet is the detailed working behind the approved summary. Each approved line is split into planned spends, by month and, where known, by event. Expenses are matched to a planned spend when their event matches. Otherwise they count against the whole line. You can reassign them under <b>Review how expenses are assigned</b>. Totals here roll up into the summary and the downloadable report.</div></div>
+  <div class="row between"><div class="row" style="gap:20px"><div><div class="eyebrow">Approved lines</div><b class="num">${inr(totAppr)}</b></div><div><div class="eyebrow">Planned in breakdown</div><b class="num">${inr(totPlan)}</b></div><div><div class="eyebrow">Not yet planned</div><b class="num" style="${totAppr-totPlan<0?'color:var(--bad)':''}">${inr(totAppr-totPlan)}</b></div></div>
+   <select id="annv2" onchange="annV=this.value;render()" style="width:auto"><option value="">All verticals</option>${verts().map(v=>`<option ${v===annV?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+  ${lines.map(l=>{const ps=planOf(l),pl=ps.reduce((a,b)=>a+b.amt,0),u=usedOf(l),gap=l.approved-pl;
+   const lineOnly=expOf(l).filter(x=>!piOf(x)).reduce((a,b)=>a+b.amt,0);
+   return `<section class="card grid" id="bl-${l.id}" style="gap:10px;scroll-margin-top:80px">
+    <div class="row between" style="align-items:flex-start"><div><div class="eyebrow">${esc(l.vertical)}${l.nature!=='—'?' · '+esc(l.nature):''} · ${esc(l.freq)}</div><h3>${esc(l.item)}</h3></div>
+     <div class="row" style="gap:16px;font-size:.88rem"><span>Approved <b class="num">${inr(l.approved)}</b></span><span>Planned <b class="num">${inr(pl)}</b></span><span>Used <b class="num">${inr(u)}</b></span>
+     ${l.approved||pl?`<span class="pill ${gap<0?'bad':gap>0?'warn':'ok'}">${gap<0?inr(-gap)+' over-planned':gap>0?inr(gap)+' not yet planned':'Fully planned'}</span>`:'<span class="pill">Not budgeted this year</span>'}</div></div>
+    ${ps.length?`<div class="tbl-wrap"><table><thead><tr><th>Month</th><th>Planned spend</th><th>Event</th><th>Qty × unit cost</th><th>Planned</th><th>Used</th><th>Remaining</th><th></th></tr></thead><tbody>
+     ${ps.map(p=>{const pu=piUsed(p);return `<tr><td class="num" style="white-space:nowrap">${mLabel(p.month)}</td><td style="min-width:200px">${esc(p.title)}</td>
+      <td><select id="pe-${p.id}" aria-label="Event" onchange="setPlan('${p.id}','ev',this.value)" style="max-width:190px"><option value="">— Not linked —</option>${S.events.map(e=>`<option value="${e.id}" ${e.id===p.ev?'selected':''}>${esc(e.name)}</option>`).join('')}</select></td>
+      <td class="faint num" style="white-space:nowrap">${p.qty?p.qty.toLocaleString('en-IN')+' × ₹'+p.unit.toLocaleString('en-IN'):'—'}</td>
+      <td><input type="number" id="pa-${p.id}" value="${p.amt}" style="width:96px;padding:3px 6px" onchange="setPlan('${p.id}','amt',+this.value)"></td>
+      <td class="num">${pu?inr(pu):'<span class="faint">—</span>'}</td><td class="num" style="${p.amt-pu<0?'color:var(--bad)':''}">${inr(p.amt-pu)}</td>
+      <td><button class="btn ghost sm" onclick="delPlan('${p.id}')">Remove</button></td></tr>`}).join('')}
+     ${lineOnly?`<tr><td></td><td class="faint">Expenses not linked to a planned spend</td><td></td><td></td><td></td><td class="num">${inr(lineOnly)}</td><td></td><td></td></tr>`:''}
+     <tr style="background:var(--sunk)"><td></td><td><b>Total</b></td><td></td><td></td><td class="num"><b>${inr(pl)}</b></td><td class="num"><b>${inr(u)}</b></td><td class="num"><b>${inr(pl-u)}</b></td><td></td></tr>
+    </tbody></table></div>`:'<div class="faint">No planned spends yet.</div>'}
+    <div><button class="btn sm" onclick="addPlan('${l.id}')">${ic('plus')}Add planned spend</button></div></section>`}).join('')}`}
+function setPlan(id,k,v){const p=planById(id);p[k]=v;if(k==='amt'){p.qty=0;p.unit=0}save();render()}
+function delPlan(id){S.annual.plan=S.annual.plan.filter(p=>p.id!==id);for(const x of S.expenses)if(x.pi===id)x.pi='';save();render()}
+function addPlan(lid){const l=S.annual.lines.find(x=>x.id===lid);modal(`<h2>Add planned spend</h2><div class="faint">${esc(l.vertical)} · ${esc(l.item)}</div>
+  <div class="field"><label for="ppt">What is it?</label><input type="text" id="ppt" placeholder="e.g. Reels for Prem Mahotsav"></div>
+  <div class="grid g2" style="gap:10px"><div class="field"><label for="ppm">Month</label><input type="month" id="ppm" value="${TODAY.slice(0,7)}"></div>
+  <div class="field"><label for="ppe">Event (optional)</label><select id="ppe"><option value="">— Not linked —</option>${S.events.map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('')}</select></div>
+  <div class="field"><label for="ppq">Quantity</label><input type="number" id="ppq" value="1" oninput="$('ppa').value=(+$('ppq').value||0)*(+$('ppu').value||0)"></div>
+  <div class="field"><label for="ppu">Unit cost (₹)</label><input type="number" id="ppu" value="${l.unit||''}" oninput="$('ppa').value=(+$('ppq').value||0)*(+$('ppu').value||0)"></div>
+  <div class="field"><label for="ppa">Planned amount (₹)</label><input type="number" id="ppa" value="${l.unit||''}"></div></div>
+  <div class="row"><button class="btn pri" onclick="savePlan('${lid}')">Add</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function savePlan(lid){(S.annual.plan=S.annual.plan||[]).push({id:uid(),line:lid,month:$('ppm').value,title:$('ppt').value.trim()||'Planned spend',ev:$('ppe').value,qty:+$('ppq').value||0,unit:+$('ppu').value||0,amt:+$('ppa').value||0});closeModal();save();render()}
 const VERT=type=>type==='smilescapes'?'Project Smilestones':'Events';
 const verts=()=>[...new Set(S.annual.lines.map(l=>l.vertical))];
 function autoLine(x){const e=evById(x.ev);if(!e)return null;const v=VERT(e.type),h=(x.head||'').toLowerCase().trim();
   return S.annual.lines.find(l=>(l.vertical===v||l.vertical==='ALL')&&(l.item.toLowerCase()===h||l.nature.toLowerCase()===h))||null}
-function lineOf(x){if(x.line==='none')return null;if(x.line)return S.annual.lines.find(l=>l.id===x.line)||autoLine(x);return autoLine(x)}
+function lineOf(x){if(x.line==='none')return null;if(x.pi){const p=planById(x.pi);if(p)return S.annual.lines.find(l=>l.id===p.line)}if(x.line)return S.annual.lines.find(l=>l.id===x.line)||autoLine(x);return autoLine(x)}
+const planById=id=>(S.annual.plan||[]).find(p=>p.id===id);
+function piOf(x){if(x.pi)return planById(x.pi)||null;const l=lineOf(x);if(!l)return null;return (S.annual.plan||[]).find(p=>p.line===l.id&&p.ev&&p.ev===x.ev)||null}
+const planOf=l=>(S.annual.plan||[]).filter(p=>p.line===l.id).sort((a,b)=>a.month<b.month?-1:1);
+const piUsed=p=>S.expenses.filter(x=>{const q=piOf(x);return q&&q.id===p.id}).reduce((a,b)=>a+b.amt,0);
+const mLabel=m=>m?MON[+m.slice(5)-1]+' '+m.slice(2,4):'—';
 const expOf=l=>S.expenses.filter(x=>{const m=lineOf(x);return m&&m.id===l.id});
 const usedOf=l=>expOf(l).reduce((a,b)=>a+b.amt,0);
 const lineName=l=>`${l.vertical} · ${l.item}`;
-const lineOpts=sel=>`<option value="">Auto-match</option>`+verts().map(v=>`<optgroup label="${esc(v)}">${S.annual.lines.filter(l=>l.vertical===v).map(l=>`<option value="${l.id}" ${l.id===sel?'selected':''}>${esc(l.item)}${l.nature!=='—'?' ('+esc(l.nature)+')':''}</option>`).join('')}</optgroup>`).join('')+`<option value="none" ${sel==='none'?'selected':''}>Not from the annual budget</option>`;
+const lineOpts=sel=>`<option value="">Auto-match</option>`+verts().map(v=>`<optgroup label="${esc(v)}">${S.annual.lines.filter(l=>l.vertical===v).map(l=>`<option value="${l.id}" ${l.id===sel?'selected':''}>${esc(l.item)} · whole line</option>`+planOf(l).map(p=>`<option value="pi:${p.id}" ${'pi:'+p.id===sel?'selected':''}>&nbsp;&nbsp;↳ ${esc(l.item)} · ${mLabel(p.month)} · ${esc(p.title)}</option>`).join('')).join('')}</optgroup>`).join('')+`<option value="none" ${sel==='none'?'selected':''}>Not from the annual budget</option>`;
 function annualTotals(){const L=S.annual.lines;const planned=L.reduce((a,b)=>a+b.approved,0);let used=0,un=[];
   for(const x of S.expenses){const l=lineOf(x);if(l)used+=x.amt;else if(x.line!=='none')un.push(x)}return {appr:S.annual.approvedTotal||planned,planned,used,un}}
 const barCls=p=>p>100?'bad':p>85?'gd':'ok';
@@ -803,13 +855,13 @@ V.budget=()=>{
    <div class="row"><select id="bev" onchange="bEv=this.value;render()" style="width:auto">${S.events.map(e=>`<option value="${e.id}" ${e.id===bEv?'selected':''}>${esc(e.name)}</option>`).join('')}</select>
    <button class="btn pri" onclick="reportModal('${bEv}')">${ic('file')}Event report</button></div></div>${tabs}
   ${budgetBlock(bEv)}`;
+  if(bSub==='break')return budgetHead(A,tabs)+breakdownView();
   const {appr,planned,used,un}=annualTotals(); const p=appr?Math.round(used/appr*100):0;
   const byV=verts().map(v=>{const ls=A.lines.filter(l=>l.vertical===v);return {v,ls,a:ls.reduce((s,l)=>s+l.approved,0),u:ls.reduce((s,l)=>s+usedOf(l),0)}});
   const byN=[...new Set(A.lines.map(l=>l.nature==='—'?l.vertical:l.nature))].map(n=>{const ls=A.lines.filter(l=>(l.nature==='—'?l.vertical:l.nature)===n);return {n,a:ls.reduce((s,l)=>s+l.approved,0),u:ls.reduce((s,l)=>s+usedOf(l),0)}});
-  const mapRows=S.expenses.filter(x=>mapQ==='all'||(mapQ==='un'?(!lineOf(x)&&x.line!=='none'):!!x.line)).sort((a,b)=>a.date<b.date?1:-1);
+  const mapRows=S.expenses.filter(x=>mapQ==='all'||(mapQ==='un'?(!lineOf(x)&&x.line!=='none'):!!(x.line||x.pi))).sort((a,b)=>a.date<b.date?1:-1);
   const meter=(label,u,a)=>{const q=a?Math.round(u/a*100):0;return `<div class="grid" style="gap:5px"><div class="row between"><b>${esc(label)}</b><span class="num muted">${inr(u)} <span class="faint">/ ${inr(a)}</span></span></div><div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div></div>`};
-  return `<div class="row between"><div><div class="eyebrow">${esc(A.title)} · ${esc(A.period)}</div><h1>${t('Budget')}</h1></div>
-   <div class="row"><button class="btn" onclick="uploadAnnual()">${ic('up')}Upload approved budget</button><button class="btn pri" onclick="annualReport()">${ic('file')}Budget report</button></div></div>${tabs}
+  return budgetHead(A,tabs)+`
   <div class="card row between" style="border-color:var(--gold)"><div class="row" style="flex-wrap:nowrap"><span class="pill ok">Approved</span><div><b>${inr(appr)}</b> approved on ${esc(A.approvedOn)} <span class="faint">· proposed ${inr(planned)} · submitted ${esc(A.submitted)}</span></div></div><button class="btn sm" onclick="editApproval()">Edit</button></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
    ${[['Approved for the year',inr(appr),`${inr(planned)} planned · ${inr(appr-planned)} buffer`],['Used so far',inr(used),p+'% of approved'],['Remaining',inr(appr-used),appr-used<0?'Over budget':'Available'],['Not assigned',un.length,un.length?'expenses outside any budget line':'All expenses assigned']].map(([k,v,s],i)=>`<div class="card"><div class="eyebrow">${k}</div><div class="num" style="font-size:1.45rem;font-weight:600;${i===3&&un.length?'color:var(--warn)':''}">${v}</div><div class="faint" style="font-size:.8rem">${s}</div></div>`).join('')}
@@ -823,7 +875,7 @@ V.budget=()=>{
   <div class="grid" style="gap:8px"><div class="row between"><h3>Budget sheet · approved vs used</h3><div class="row"><select id="annv" onchange="annV=this.value;render()" style="width:auto"><option value="">All verticals</option>${verts().map(v=>`<option ${v===annV?'selected':''}>${esc(v)}</option>`).join('')}</select><button class="btn sm" onclick="addLine()">${ic('plus')}Add line</button></div></div>
   <div class="tbl-wrap"><table><thead><tr><th>Vertical</th><th>Nature</th><th>Line item</th><th>Frequency</th><th>Plan</th><th>Approved FY27</th><th>Used</th><th>Remaining</th><th style="min-width:100px">Used %</th><th>FY26 approved / actual</th></tr></thead><tbody>
   ${byV.filter(r=>!annV||r.v===annV).map(r=>r.ls.map((l,i)=>{const u=usedOf(l),q=l.approved?Math.round(u/l.approved*100):(u?999:0);
-   return `<tr><td>${i===0?`<b>${esc(r.v)}</b>`:''}</td><td class="muted">${l.nature==='—'||(i>0&&r.ls[i-1].nature===l.nature)?'':esc(l.nature)}</td><td><b style="font-weight:600">${esc(l.item)}</b> <span class="faint num" style="font-size:.78rem">${expOf(l).length?'· '+expOf(l).length+' exp.':''}</span></td><td class="faint">${esc(l.freq)}</td><td class="faint num" style="white-space:nowrap">${planTxt(l)}</td>
+   return `<tr><td>${i===0?`<b>${esc(r.v)}</b>`:''}</td><td class="muted">${l.nature==='—'||(i>0&&r.ls[i-1].nature===l.nature)?'':esc(l.nature)}</td><td><button class="btn ghost sm" style="padding:0;font-weight:600;text-decoration:underline dotted;text-underline-offset:3px" title="Open breakdown" onclick="bSub='break';focusLine='${l.id}';render()">${esc(l.item)}</button> <span class="faint num" style="font-size:.78rem">${expOf(l).length?'· '+expOf(l).length+' exp.':''}</span></td><td class="faint">${esc(l.freq)}</td><td class="faint num" style="white-space:nowrap">${planTxt(l)}</td>
    <td><input type="number" id="la-${l.id}" value="${l.approved}" style="width:100px;padding:3px 6px" onchange="setLine('${l.id}',+this.value)"></td><td class="num">${inr(u)}</td><td class="num" style="${l.approved-u<0?'color:var(--bad)':''}">${inr(l.approved-u)}</td><td>${l.approved?`<div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div>`:u?'<span class="pill bad">Not budgeted</span>':''}</td><td class="faint num" style="white-space:nowrap">${inr(l.fy26)} / ${inr(l.fy26act)}</td></tr>`}).join('')+`<tr style="background:var(--sunk)"><td></td><td></td><td><b>Total · ${esc(r.v)}</b></td><td></td><td></td><td class="num"><b>${inr(r.a)}</b></td><td class="num"><b>${inr(r.u)}</b></td><td class="num"><b>${inr(r.a-r.u)}</b></td><td></td><td class="faint num">${inr(r.ls.reduce((s,l)=>s+l.fy26,0))} / ${inr(r.ls.reduce((s,l)=>s+l.fy26act,0))}</td></tr>`).join('')}
   ${annV?'':`<tr><td></td><td></td><td><b>Grand total (proposed)</b></td><td></td><td></td><td class="num"><b>${inr(planned)}</b></td><td class="num"><b>${inr(used)}</b></td><td class="num"><b>${inr(planned-used)}</b></td><td></td><td></td></tr><tr style="background:var(--gold-soft)"><td></td><td></td><td><b>Approved total</b></td><td></td><td></td><td class="num"><b>${inr(appr)}</b></td><td></td><td class="num"><b>${inr(appr-used)}</b></td><td></td><td></td></tr>`}
   </tbody></table></div></div>
@@ -831,13 +883,13 @@ V.budget=()=>{
    <div class="seg">${[['all','All'],['un',`Not assigned (${un.length})`],['man','Changed by hand']].map(x=>`<button class="${mapQ===x[0]?'on':''}" onclick="mapQ='${x[0]}';render()">${x[1]}</button>`).join('')}</div></div>
   <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Event</th><th>Expense</th><th>Head</th><th>Amount</th><th>Counts against</th></tr></thead><tbody>
   ${mapRows.map(x=>{const l=lineOf(x),e=evById(x.ev);return `<tr><td class="num faint">${fmt(x.date)}</td><td>${esc(e?e.name:'')}</td><td>${esc(x.item)}</td><td class="muted">${esc(x.head)}</td><td class="num"><b>${inr(x.amt)}</b></td>
-   <td><div class="row" style="gap:6px;flex-wrap:nowrap"><select id="map-${x.id}" aria-label="Budget line" onchange="setMap('${x.id}',this.value)" style="max-width:240px">${lineOpts(x.line||'')}</select>${x.line&&x.line!=='none'?'<span class="pill gd">manual</span>':l?`<span class="pill ok">${esc(l.item)}</span>`:x.line==='none'?'':'<span class="pill warn">No match</span>'}</div></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Nothing here.</td></tr>'}
+   <td><div class="row" style="gap:6px;flex-wrap:nowrap"><select id="map-${x.id}" aria-label="Budget line" onchange="setMap('${x.id}',this.value)" style="max-width:240px">${lineOpts(x.pi?'pi:'+x.pi:(x.line||''))}</select>${(x.pi||(x.line&&x.line!=='none'))?'<span class="pill gd">manual</span>':l?`<span class="pill ok">${esc(l.item)}${piOf(x)?' · '+mLabel(piOf(x).month):''}</span>`:x.line==='none'?'':'<span class="pill warn">No match</span>'}</div></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Nothing here.</td></tr>'}
   </tbody></table></div></div>
   <div class="card grid" style="gap:8px"><h3>Report format</h3><div class="muted">The budget report follows your Gennext Budget Summary layout (vertical → nature → line item, with FY26 and FY27 columns). Upload a different template here if the format changes.</div>
   <div class="row"><input type="file" id="rtpl" accept=".xlsx,.xls,.docx,.pdf" onchange="S.rtpl=this.files[0]&&this.files[0].name;save();render()" style="max-width:320px">${S.rtpl?`<span class="pill ok">Template: ${esc(S.rtpl)}</span>`:'<span class="pill">Gennext Budget Summary format</span>'}</div></div>`;
 };
 function setLine(id,v){S.annual.lines.find(l=>l.id===id).approved=v||0;save();render()}
-function setMap(id,v){S.expenses.find(x=>x.id===id).line=v;save();render();toast(v?'Expense moved':'Back to auto-match')}
+function setMap(id,v){const x=S.expenses.find(x=>x.id===id);if(v.startsWith('pi:')){x.pi=v.slice(3);x.line=''}else{x.pi='';x.line=v}save();render();toast(v?'Expense moved':'Back to auto-match')}
 function editApproval(){const A=S.annual;modal(`<h2>Approval details</h2><div class="grid g2" style="gap:10px">
   <div class="field"><label for="apt">Approved total (₹)</label><input type="number" id="apt" value="${A.approvedTotal}"></div>
   <div class="field"><label for="apo">Approved on</label><input type="text" id="apo" value="${esc(A.approvedOn)}"></div>
@@ -871,21 +923,47 @@ function parseAnnual(inp){const f=inp.files[0];if(!f)return;if(typeof XLSX==='un
      upRows.push({id:uid(),sec:0,vertical:lv,nature:ln,item:it,freq:cF>=0?String(row[cF]):'',qty:0,unitLbl:'',unit:0,approved:amt,fy26:0,fy26act:0})}
    $('aprev').innerHTML=`<div class="tbl-wrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>Vertical</th><th>Nature</th><th>Line item</th><th>Amount</th></tr></thead><tbody>${upRows.map(x=>`<tr><td>${esc(x.vertical)}</td><td>${esc(x.nature)}</td><td>${esc(x.item)}</td><td class="num">${inr(x.approved)}</td></tr>`).join('')}</tbody></table></div><div class="faint" style="font-size:.85rem">${upRows.length} lines · total ${inr(upRows.reduce((a,b)=>a+b.approved,0))}</div>`;
    const b=$('abtn');b.disabled=false;b.style.opacity=1}catch(e){$('aprev').innerHTML='<div class="note" style="background:var(--bad-soft)">That file could not be read. Upload an .xlsx or .csv file with a "Line item" column.</div>'}};r.readAsArrayBuffer(f)}
-function applyAnnual(){if(!upRows)return;Object.assign(S.annual,{fy:$('afy').value||S.annual.fy,approvedTotal:+$('aat').value||upRows.reduce((a,b)=>a+b.approved,0),lines:upRows});for(const x of S.expenses)if(x.line&&x.line!=='none')x.line='';closeModal();save();render();toast(`${upRows.length} budget lines loaded · expenses re-matched`)}
-function annualReport(){const A=S.annual;const {appr,planned,used,un}=annualTotals();
+function applyAnnual(){if(!upRows)return;Object.assign(S.annual,{fy:$('afy').value||S.annual.fy,approvedTotal:+$('aat').value||upRows.reduce((a,b)=>a+b.approved,0),lines:upRows,plan:[]});for(const x of S.expenses){if(x.line&&x.line!=='none')x.line='';x.pi=''}closeModal();save();render();toast(`${upRows.length} budget lines loaded · expenses re-matched`)}
+function reportRows(){const A=S.annual;const secOf=l=>l.sec||verts().indexOf(l.vertical)+1;const secs=[...new Set(A.lines.map(secOf))].sort((a,b)=>a-b);
+  const out=[];let g={fy26:0,act:0,plan:0,used:0};
+  for(const sn of secs){const ls=A.lines.filter(l=>secOf(l)===sn);let t={fy26:0,act:0,plan:0,used:0};let pv='',pn='';
+    ls.forEach(l=>{const u=usedOf(l);out.push({k:'line',sn:pv?'':sn,v:l.vertical===pv?'':l.vertical,n:l.nature==='—'||l.nature===pn?'':l.nature,item:l.item,freq:l.freq,fy26:l.fy26,act:l.fy26act,plan:l.approved,unit:l.qty?`${l.qty.toLocaleString('en-IN')} ${l.unitLbl}`:'',per:l.unit||'',used:u,rem:l.approved-u});pv=l.vertical;pn=l.nature;
+      t.fy26+=l.fy26;t.act+=l.fy26act;t.plan+=l.approved;t.used+=u});
+    out.push({k:'tot',item:`TOTAL SECTION ${sn}`,...t,rem:t.plan-t.used});for(const k in g)g[k]+=t[k]}
+  out.push({k:'grand',item:'GRAND TOTAL',...g,rem:g.plan-g.used});return out}
+function annualReport(){const A=S.annual;const {appr,planned,used,un}=annualTotals();const R=reportRows();const n=v=>v===''||v==null?'':typeof v==='number'?v.toLocaleString('en-IN'):esc(v);
   modal(`<div class="row between"><h2>Budget report</h2><button class="btn ghost" onclick="closeModal()">${ic('x')}</button></div>
   <div class="report">
-   <div class="row between" style="align-items:flex-start"><div><div class="eyebrow">${esc(A.title)} · Utilisation</div><h2>Approved vs used · FY ${esc(A.fy)}</h2><div class="muted">Period ${esc(A.period)} · as on ${fmtY(TODAY)}</div></div>${logo(40)}</div>
-   <div class="row" style="gap:24px"><div><div class="eyebrow">Approved</div><b class="num">${inr(appr)}</b></div><div><div class="eyebrow">Proposed plan</div><b class="num">${inr(planned)}</b></div><div><div class="eyebrow">Used</div><b class="num">${inr(used)}</b></div><div><div class="eyebrow">Remaining</div><b class="num" style="color:${appr-used<0?'var(--bad)':'var(--ok)'}">${inr(appr-used)}</b></div><div><div class="eyebrow">Utilisation</div><b class="num">${appr?Math.round(used/appr*100):0}%</b></div></div>
-   <div class="tbl-wrap"><table><thead><tr><th>Vertical</th><th>Nature</th><th>Line item</th><th>Proposed FY27</th><th>Used</th><th>Remaining</th></tr></thead><tbody>
-   ${verts().map(v=>{const ls=A.lines.filter(l=>l.vertical===v);return ls.map((l,i)=>{const u=usedOf(l);return `<tr><td>${i?'':`<b>${esc(v)}</b>`}</td><td>${l.nature==='—'?'':esc(l.nature)}</td><td>${esc(l.item)}</td><td class="num">${inr(l.approved)}</td><td class="num">${inr(u)}</td><td class="num">${inr(l.approved-u)}</td></tr>`}).join('')+`<tr style="background:var(--sunk)"><td></td><td></td><td><b>Total</b></td><td class="num"><b>${inr(ls.reduce((s,l)=>s+l.approved,0))}</b></td><td class="num"><b>${inr(ls.reduce((s,l)=>s+usedOf(l),0))}</b></td><td></td></tr>`}).join('')}
-   <tr><td></td><td></td><td><b>Grand total</b></td><td class="num"><b>${inr(planned)}</b></td><td class="num"><b>${inr(used)}</b></td><td class="num"><b>${inr(planned-used)}</b></td></tr>
-   <tr style="background:var(--gold-soft)"><td></td><td></td><td><b>Approved (${esc(A.approvedOn)})</b></td><td class="num"><b>${inr(appr)}</b></td><td></td><td class="num"><b>${inr(appr-used)}</b></td></tr></tbody></table></div>
-   ${un.length?`<div><div class="eyebrow" style="padding-bottom:6px">Event expenses not charged to this budget</div>${un.map(x=>`<div class="task" style="grid-template-columns:1fr auto"><span>${esc(x.item)} <span class="faint">· ${esc((evById(x.ev)||{}).name||'')}</span></span><b class="num">${inr(x.amt)}</b></div>`).join('')}</div>`:''}
-   <div class="faint" style="font-size:.82rem">Submitted ${esc(A.submitted)}</div>
+   <div style="display:grid;gap:2px;font-size:.88rem;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--indigo-soft);justify-self:start">
+    <div><b>Title:</b> ${esc(A.title)}</div><div><b>Period:</b> FY${'20'+A.fy.slice(-2)} · ${esc(A.period)}</div><div><b>Date of submission:</b> ${esc(A.submitted.split(' · ')[0])}</div><div><b>Submitted by:</b> ${esc(A.submitted.split(' · ')[1]||'')}</div><div><b>Status:</b> ${inr(appr)} approved on ${esc(A.approvedOn)} · utilisation as on ${fmtY(TODAY)}</div></div>
+   <div class="tbl-wrap"><table style="font-size:.8rem"><thead><tr><th rowspan="2">S No</th><th rowspan="2">Vertical</th><th rowspan="2">Nature of expense</th><th rowspan="2">Line items / project</th><th rowspan="2">Frequency</th><th colspan="2" style="text-align:center">FY2025-26</th><th colspan="3" style="text-align:center">FY2026-27 proposed plan</th><th colspan="2" style="text-align:center;background:var(--gold-soft)">FY2026-27 actual</th></tr>
+    <tr><th>Total approved</th><th>Actual expense</th><th>Plan (INR)</th><th>Unit</th><th>Per unit cost</th><th style="background:var(--gold-soft)">Used to date</th><th style="background:var(--gold-soft)">Remaining</th></tr></thead><tbody>
+    ${R.map(r=>r.k==='line'?`<tr><td>${n(r.sn)}</td><td><b>${n(r.v)}</b></td><td>${n(r.n)}</td><td>${n(r.item)}</td><td class="faint">${n(r.freq)}</td><td class="num">${n(r.fy26)}</td><td class="num">${n(r.act)}</td><td class="num">${n(r.plan)}</td><td class="num faint">${n(r.unit)}</td><td class="num faint">${n(r.per)}</td><td class="num">${n(r.used)}</td><td class="num">${n(r.rem)}</td></tr>`
+     :`<tr style="background:${r.k==='grand'?'var(--indigo-soft)':'var(--sunk)'}"><td></td><td></td><td></td><td><b>${r.item}</b></td><td></td><td class="num"><b>${n(r.fy26)}</b></td><td class="num"><b>${n(r.act)}</b></td><td class="num"><b>${n(r.plan)}</b></td><td></td><td></td><td class="num"><b>${n(r.used)}</b></td><td class="num"><b>${n(r.rem)}</b></td></tr>`).join('')}
+    <tr><td></td><td></td><td></td><td><b>Total ask</b></td><td></td><td></td><td></td><td class="num"><b>${n(planned)}</b></td><td></td><td></td><td></td><td></td></tr>
+    <tr style="background:var(--gold-soft)"><td></td><td></td><td></td><td><b>Approved</b></td><td></td><td></td><td></td><td class="num"><b>${n(appr)}</b></td><td></td><td></td><td class="num"><b>${n(used)}</b></td><td class="num"><b>${n(appr-used)}</b></td></tr>
+   </tbody></table></div>
+   <div class="faint" style="font-size:.82rem">The Excel file has three sheets: <b>Budget Summary</b> (this layout), <b>Line-wise Breakdown</b> and <b>Expenses</b>, which lists every expense with its budget line and bill status.${un.length?` ${un.length} event expense(s) not charged to this budget are listed separately.`:''}</div>
   </div>
-  <div class="note">${ic('info')}<div>Prototype preview. In the full app this downloads as Excel or PDF.</div></div>
-  <div class="row"><button class="btn pri" onclick="toast('Downloads work once the app is live. This preview blocks them')">Download Excel</button><button class="btn" onclick="toast('Downloads work once the app is live. This preview blocks them')">Download PDF</button></div>`,true)}
+  <div class="row"><button class="btn pri" id="dlx" onclick="downloadBudget()">${ic('file')}Download Excel</button><span id="dlmsg" class="faint" style="font-size:.84rem"></span></div>`,true)}
+async function downloadBudget(){const msg=$('dlmsg');if(typeof XLSX==='undefined'){msg.textContent='The spreadsheet tool did not load. Reload the page and try again.';return}
+  const A=S.annual,{appr,planned,used,un}=annualTotals(),R=reportRows();
+  const sum=[[`Title: ${A.title}`],[`Period: FY20${A.fy.slice(-2)} ${A.period}`],[`Date of Submission: ${A.submitted.split(' · ')[0]}`],[`Submitted by: ${A.submitted.split(' · ')[1]||''}`],[`Approved: ${appr} on ${A.approvedOn} · Utilisation as on ${fmtY(TODAY)}`],[],
+   ['S No','Vertical','Nature Of Expense','Line Items / Project','Frequency','FY2025-26 Total Approved (INR)','FY2025-26 Actual Expense (INR)','FY2026-27 Proposed Plan (INR)','Unit','Per Unit Cost (INR)','FY2026-27 Actual Used to Date (INR)','FY2026-27 Remaining (INR)']];
+  for(const r of R)sum.push(r.k==='line'?[r.sn,r.v,r.n,r.item,r.freq,r.fy26,r.act,r.plan,r.unit,r.per,r.used,r.rem]:['','','',r.item,'',r.fy26,r.act,r.plan,'','',r.used,r.rem]);
+  sum.push([],['','','','Total Ask','','','',planned],['','','','Approved','','','',appr,'','',used,appr-used]);
+  const br=[['Vertical','Nature Of Expense','Line Item','Month','Planned Spend','Event','Qty','Unit Cost (INR)','Planned (INR)','Used (INR)','Remaining (INR)']];
+  for(const l of A.lines){for(const p of planOf(l)){const u=piUsed(p);br.push([l.vertical,l.nature,l.item,mLabel(p.month),p.title,(evById(p.ev)||{}).name||'',p.qty||'',p.unit||'',p.amt,u,p.amt-u])}
+    const lo=expOf(l).filter(x=>!piOf(x)).reduce((a,b)=>a+b.amt,0);if(lo)br.push([l.vertical,l.nature,l.item,'','Expenses not linked to a planned spend','','','','',lo,'']);
+    const pl=planOf(l).reduce((a,b)=>a+b.amt,0);br.push(['','',`Total – ${l.item} (approved ${l.approved})`,'','','','','',pl,usedOf(l),pl-usedOf(l)],[])}
+  const ex=[['Date','Event','Expense','Budget Head','Vendor','Paid By','Quoted (INR)','Actual (INR)','Budget Line','Planned Spend','Bill Available','Bill File']];
+  for(const x of [...S.expenses].sort((a,b)=>a.date<b.date?-1:1)){const l=lineOf(x),p=piOf(x);ex.push([x.date,(evById(x.ev)||{}).name||'',x.item,x.head,vName(x.vendor)==='—'?'':vName(x.vendor),x.by,x.quote||'',x.amt,l?`${l.vertical} · ${l.item}`:(x.line==='none'?'Not from annual budget':'Not assigned'),p?`${mLabel(p.month)} · ${p.title}`:'',x.bill?'Yes':'No',x.file||''])}
+  const wb=XLSX.utils.book_new();const add=(rows,name,w)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=w.map(c=>({wch:c}));XLSX.utils.book_append_sheet(wb,ws,name)};
+  add(sum,'Budget Summary',[6,20,20,34,18,16,16,16,14,12,18,16]);add(br,'Line-wise Breakdown',[20,20,30,9,40,30,8,10,12,12,12]);add(ex,'Expenses',[11,30,34,22,22,12,12,12,34,32,10,22]);
+  const data=XLSX.write(wb,{bookType:'xlsx',type:'array'});const fn=`Gennext Budget Summary FY${A.fy} (as on ${TODAY}).xlsx`;
+  const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;
+  if(!dl){msg.textContent='Downloads are not available in this view. Open the page in claude.ai to download.';return}
+  try{await dl.save({filename:fn,data});msg.textContent='Saved: '+fn}catch(e){msg.textContent=e&&e.code==='declined'?'Download cancelled.':'The file could not be saved here. Try again in a moment.'}}
 function editHeads(ev){const h=S.heads[ev]||{};const list=Object.entries(h);
   modal(`<h2>Sanctioned amounts</h2><div id="hl" class="grid" style="gap:8px">${(list.length?list:[['Decor',0],['Printing',0],['Marketing',0]]).map(([k,v],i)=>`<div class="row"><input type="text" class="hk" value="${esc(k)}" style="flex:1"><input type="number" class="hv" value="${v}" style="width:140px"></div>`).join('')}</div>
   <div><button class="btn sm" onclick="$('hl').insertAdjacentHTML('beforeend','<div class=&quot;row&quot;><input type=&quot;text&quot; class=&quot;hk&quot; placeholder=&quot;Head&quot; style=&quot;flex:1&quot;><input type=&quot;number&quot; class=&quot;hv&quot; style=&quot;width:140px&quot;></div>')">${ic('plus')}Add head</button></div>
