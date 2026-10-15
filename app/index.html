@@ -240,12 +240,13 @@ const STATUSES=['To start','WIP','Live','Closed'];
 const STCLS={'To start':'','WIP':'warn','Live':'in','Closed':'ok'};
 const TYPES={
  smilescapes:{label:'Smilescapes',short:'SS',color:'#3E8EC9',where:'Mumbai & beyond',runway:15},
- prem:{label:'Prem Mahotsav',short:'PM',color:'#C2564B',where:'RC, Khopoli',runway:90},
- anand:{label:'Anand Mahotsav',short:'AM',color:'#D9791A',where:'RC, Khopoli',runway:90},
- sarvarpan:{label:'Sarvarpan Divas',short:'SD',color:'#7A6BB0',where:'RC, Khopoli',runway:90},
- guru:{label:'Guru Purnima',short:'GP',color:'#A8812E',where:'RC, Khopoli',runway:90},
- paryushan:{label:'Paryushan',short:'PY',color:'#2F7D57',where:'RC, Khopoli',runway:90},
- rpl:{label:'RPL',short:'RPL',color:'#2C6E8F',where:'RC, Khopoli',runway:45},
+ prem:{label:'Prem Mahotsav',short:'PM',color:'#C2564B',where:'RC, Khopoli',runway:98},
+ anand:{label:'Anand Mahotsav',short:'AM',color:'#D9791A',where:'RC, Khopoli',runway:98},
+ sarvarpan:{label:'Sarvarpan Divas',short:'SD',color:'#7A6BB0',where:'RC, Khopoli',runway:98},
+ guru:{label:'Guru Purnima',short:'GP',color:'#A8812E',where:'RC, Khopoli',runway:98},
+ paryushan:{label:'Paryushan',short:'PY',color:'#2F7D57',where:'RC, Khopoli',runway:98},
+ rpl:{label:'RPL',short:'RPL',color:'#2C6E8F',where:'RC, Khopoli',runway:98},
+ ustravel:{label:'US Travel',short:'US',color:'#5B6B8C',where:'USA',runway:98},
 };
 /* row: [title, dept, collateral, ext/int, lead1, lead2, offset] */
 const SS_ROWS=[
@@ -281,57 +282,32 @@ const SS_ROWS=[
  ['Introduce next event','Marketing - Social','Static','External','Saransh','',3],
  ['Bills & expense summary','Operations','PDF','Internal','Shweta','',5],
 ];
-const RC_ROWS=[
- ['Theme & concept lock','Programming','Deck','Internal','Shweta','Saransh',-90],
- ['Budget sanction request','Leadership Update','Excel','Internal','Shweta','',-85],
- ['Key visual – design start','Design','Key visual','Internal','Saransh','Devanshi',-80],
- ['Vendor quotes – decor, sound, printing','Procurement','Quotations','Internal','Shweta','Shriya',-75],
- ['Save the date – design','Design','Static + Reel','External','Saransh','Devanshi',-70],
- ['Save the date – release','Marketing - Social','Static + Reel','External','Saransh','Anjal',-60],
- ['Programme flow draft','Programming','Doc','Internal','Shweta','Natasha',-55],
- ['Dance & skit ideas shortlisted','Programming','Idea Bank','Internal','Shweta','Natasha',-50],
- ['Promotion 1 – theme reveal','Marketing - Social','Reel','External','Saransh','Shraddha',-45],
- ['Registration open','Marketing - Information','Link + Static','External','Saransh','Anjal',-40],
- ['Printables – design start','Printables','Banners, standees, badges','Internal','Saransh','Devanshi',-35],
- ['Promotion 2 – experience teaser','Marketing - Social','Reel','External','Saransh','Chirag',-30],
- ['Rehearsals begin','Programming','—','Internal','Natasha','Shweta',-28],
- ['Printables – final files to vendor','Printables','Print files','Internal','Saransh','Shriya',-20],
- ['Props & things to buy','Procurement','Props','Internal','Shweta','Shriya',-15],
- ['Promotion 3 – what to expect','Marketing - Social','Carousel','External','Saransh','Shraddha',-14],
- ['Printables – delivery at RC','Printables','—','Internal','Shriya','',-10],
- ['Things to carry – packing list','Operations','Checklist','Internal','Shweta','Natasha',-7],
- ['Countdown reels','Marketing - Social','Reels','External','Saransh','Anjal',-5],
- ['Volunteer briefing & D-day roles','Operations','Meeting','Internal','Shweta','Saransh',-3],
- ['Setup at venue','Operations','—','Internal','Shweta','Shriya',-1],
- ['Live coverage','Marketing - Social','Reels + Story','External','Saransh','Anjal',0],
- ['Thank you post','Marketing - Social','Static','External','Saransh','',2],
- ['Report & highlights for leadership','Leadership Update','PDF + Reel','Internal','Saransh','Anjal',4],
- ['Bills collected & expense report','Operations','PDF','Internal','Shweta','',10],
+/* Events calendar (all events except Smilescapes): weeks before the event each milestone is due.
+   0 in the calendar sheet = stage not used for that creative. */
+const CAL_STAGES=['Kick-off','Referencing','First draft',"Achira's iteration",'Sending to events team','Go live'];
+const CAL_CREATIVES=[
+ ['Save the date','Static + Reel',[11,11,10,10,9,8]],
+ ['Registration flyer','Static + Link',[14,12,10,8.5,8,6]],
+ ['Dossier & thumbnails','Dossier, thumbnails',[0,0,0,6,5,3]],
 ];
-const RPL_ROWS=[
- ['Format, teams & schedule','Programming','Doc','Internal','Shweta','Saransh',-45],
- ['Budget sanction request','Leadership Update','Excel','Internal','Shweta','',-42],
- ['Team registrations open','Marketing - Information','Link','External','Saransh','Anjal',-35],
- ['Save the date','Marketing - Social','Static','External','Saransh','Devanshi',-30],
- ['Jerseys & kit – quotes','Procurement','Quotations','Internal','Shweta','Param',-28],
- ['Team reveal reels','Marketing - Social','Reels','External','Saransh','Chirag',-20],
- ['Ground, umpires & scoreboard','Operations','—','Internal','Shweta','Param',-14],
- ['Trophies & medals','Procurement','Props','Internal','Shweta','Param',-10],
- ['Fixture poster','Design','Static','External','Saransh','Devanshi',-7],
- ['Things to carry – first aid, water, kit','Operations','Checklist','Internal','Shweta','Shriya',-2],
- ['Live scores & stories','Marketing - Social','Story','External','Saransh','Anjal',0],
- ['Winners post','Marketing - Social','Static','External','Saransh','',1],
- ['Bills & expense summary','Operations','PDF','Internal','Shweta','',5],
-];
+const CAL_ROWS=[];
+for(const [cr,col,wk] of CAL_CREATIVES) wk.forEach((w,i)=>{if(w)CAL_ROWS.push([`${cr} – ${CAL_STAGES[i]}`,i===5?'Marketing - Social':'Design',col,i===5?'External':'Internal','Saransh','',-Math.round(w*7),false,cr])});
+/* Event-specific pieces: dates to be added later */
+CAL_ROWS.push(
+ ['Opening ceremony','Programming','Concept','External','Shweta','',0,true,'Event pieces'],
+ ['Activation','Programming','Activation','External','Shweta','',0,true,'Event pieces'],
+ ['Big event','Programming','Play / show','External','Shweta','',0,true,'Event pieces'],
+ ['Event coverage','Marketing - Social','Photos + videos','External','Saransh','',0,true,'Event pieces'],
+ ['Event highlights','Marketing - Social','Reel','External','Saransh','',1,true,'Event pieces'],
+);
 
 /* ---------- state ---------- */
-const KEY='gennext-events-v7';
+const KEY='gennext-events-v8';
 let S;
 function seed(){
   const tpl={};
   tpl.smilescapes=SS_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
-  for(const k of ['prem','anand','sarvarpan','guru','paryushan']) tpl[k]=RC_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
-  tpl.rpl=RPL_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
+  for(const k of ['prem','anand','sarvarpan','guru','paryushan','rpl','ustravel']) tpl[k]=CAL_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6],tbd:r[7],grp:r[8]}));
   const events=[
    {id:'e0',type:'smilescapes',name:'Pause at the Promenade',date:'2026-09-26',venue:'Mumbai'},
    {id:'e1',type:'smilescapes',name:'Smilescapes on Wheels',date:'2026-10-10',venue:'Marine Drive → Breach Candy, Mumbai'},
@@ -339,9 +315,10 @@ function seed(){
    {id:'e3',type:'prem',name:'Prem Mahotsav 2026',date:'2026-12-31',venue:'RC, Khopoli'},
    {id:'e4',type:'rpl',name:'RPL 2026',date:'2026-12-25',end:'2026-12-27',venue:'RC grounds, Khopoli'},
    {id:'e5',type:'anand',name:'Anand Mahotsav 2027',date:'2027-02-15',end:'2027-02-17',venue:'RC, Khopoli'},
-   {id:'e6',type:'sarvarpan',name:'Sarvarpan Divas 2027',date:'2027-05-30',venue:'RC, Khopoli',tentative:true},
-   {id:'e7',type:'guru',name:'Guru Purnima 2027',date:'2027-07-18',venue:'RC, Khopoli',tentative:true},
-   {id:'e8',type:'paryushan',name:'Paryushan 2027',date:'2027-08-29',venue:'RC, Khopoli',tentative:true},
+   {id:'e9',type:'ustravel',name:'US Travel 2027',date:'2027-04-01',venue:'USA'},
+   {id:'e6',type:'sarvarpan',name:'Sarvarpan Divas 2027',date:'2027-05-31',venue:'RC, Khopoli'},
+   {id:'e7',type:'guru',name:'Guru Purnima 2027',date:'2027-07-20',venue:'RC, Khopoli'},
+   {id:'e8',type:'paryushan',name:'Paryushan 2027',date:'2027-08-28',venue:'RC, Khopoli'},
   ];
   S={role:'admin',lang:'en',view:'home',ev:null,tpl,events,tasks:[],
     roles:{e1:[['Saransh','Host'],['Anjal','Shoot content'],['Natasha','Shoot content'],['Shweta','Base station'],['Devanshi','Treasure hunt – statue'],['Param','Smiley balloon – North'],['Shriya','Smiley balloon – South']],
@@ -438,6 +415,7 @@ function seed(){
   // seed statuses
   let k=0;
   for(const t of S.tasks){k++;
+    if(evById(t.ev).type!=='smilescapes'){t.st='To start';continue}
     const d=diff(t.due,TODAY);
     if(t.ev==='e1'||t.ev==='e0') t.st='Closed';
     else if(d<-3) t.st=k%7===0?'WIP':'Closed';
@@ -446,17 +424,16 @@ function seed(){
     else t.st='To start';
     if(t.st==='Closed'&&/Marketing - Social/.test(t.dept)) t.st=k%2?'Live':'Closed';
   }
-  // Prem Mahotsav: keep upcoming template tasks, replace the past ones with the real current work
-  S.tasks=S.tasks.filter(t=>!(t.ev==='e3'&&t.due<TODAY));
-  for(const t of S.tasks) if(t.ev==='e3') t.st='To start';
-  const pm=(t,dept,col,l1,l2,due,st,note)=>S.tasks.push({id:uid(),ev:'e3',t,dept,col,x:'Internal',l1,l2,o:diff(due,'2026-12-31'),due,edited:false,st,note});
-  pm('Main creative – approval','Design','Key visual','Saransh','','2026-10-17','WIP','Submitted to the events team. Approval due by 17 Oct.');
-  pm('Dossier','Design','Dossier','Saransh','','2026-10-24','To start','Starts after the main creative is approved.');
-  pm('Thumbnails','Design','Thumbnails','Saransh','','2026-10-24','To start','Starts after the main creative is approved.');
-  pm('Opening ceremony','Programming','Concept','Shweta','','2026-10-17','WIP','Brainstorming. Milestones: show to Achira & get approval by 17 Oct → finalise core idea by 20 Oct → Grand rehearsal (GR) 30 Nov (tentative).');
+  // Prem Mahotsav: the current work
+  S.tasks=S.tasks.filter(t=>!(t.ev==='e3'&&t.t==='Opening ceremony'));
+  const pm=(t,dept,col,l1,l2,due,st,note,grp)=>S.tasks.push({id:uid(),ev:'e3',t,dept,col,x:'Internal',l1,l2,o:diff(due,'2026-12-31'),due,edited:true,st,note,grp});
+  const noteOn=(ev,t,n)=>{const x=S.tasks.find(x=>x.ev===ev&&x.t===t);if(x)x.note=n};
+  noteOn('e3','Activation','Networking');noteOn('e6','Big event','Play');
+  pm('Main creative – approval','Design','Key visual','Saransh','','2026-10-17','WIP','Submitted to the events team. Approval due by 17 Oct; dossier & thumbnails follow.','Main creative');
+  pm('Opening ceremony','Programming','Concept','Shweta','','2026-10-17','WIP','Brainstorming. Milestones: show to Achira & get approval by 17 Oct → finalise core idea by 20 Oct → Grand rehearsal (GR) 30 Nov (tentative).','Event pieces');
 }
 function genTasks(e){
-  for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:''});
+  for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:'',tbd:!!r.tbd,grp:r.grp||''});
 }
 function seedAnnual(){const L=[];
   const r=(sec,vertical,nature,item,freq,qty,unitLbl,unit,approved,fy26,fy26act)=>L.push({id:uid(),sec,vertical,nature,item,freq,qty,unitLbl,unit,approved,fy26,fy26act});
@@ -552,7 +529,7 @@ const art=(hue,label,ratio)=>`<div class="art" style="aspect-ratio:${ratio||'4/3
 const V={};
 V.home=()=>{
   const up=upcoming(); const nx=up[0];
-  const mine=S.tasks.filter(x=>(x.l1===ME()||x.l2===ME())&&!done(x));
+  const mine=S.tasks.filter(x=>(x.l1===ME()||x.l2===ME())&&!done(x)&&!x.tbd);
   const over=mine.filter(x=>x.due<TODAY).sort((a,b)=>a.due<b.due?-1:1);
   const week=mine.filter(x=>x.due>=TODAY&&diff(x.due,TODAY)<=7).sort((a,b)=>a.due<b.due?-1:1);
   const d=nx?diff(nx.date,TODAY):0;
@@ -621,17 +598,18 @@ V.event=()=>{
       ${isAdmin()?`<button class="btn sm" onclick="addTask()">${ic('plus')}Task</button>`:''}</div>`;
     if(trView==='board'){
       body=filters+`<div class="board">${STATUSES.map(s=>`<div class="col"><div class="row between"><b>${s}</b><span class="pill">${f.filter(x=>x.st===s).length}</span></div>
-        ${f.filter(x=>x.st===s).map(x=>`<div class="kc"><b>${esc(x.t)}</b><div class="row" style="gap:6px"><span class="pill ${x.due<TODAY&&!done(x)?'bad':''} num">${fmt(x.due)}</span><span class="pill">${esc(x.dept)}</span></div>
+        ${f.filter(x=>x.st===s).map(x=>`<div class="kc"><b>${esc(x.t)}</b><div class="row" style="gap:6px"><span class="pill ${x.due<TODAY&&!done(x)&&!x.tbd?'bad':''} num">${x.tbd?'Date TBC':fmt(x.due)}</span><span class="pill">${esc(x.dept)}</span></div>
         <div class="row between"><span class="faint">${esc(x.l1)}${x.l2?' + '+esc(x.l2):''}</span>
         <select aria-label="Status" onchange="setSt('${x.id}',this.value)" style="width:auto;padding:2px 6px;font-size:.78rem">${STATUSES.map(o=>`<option ${o===x.st?'selected':''}>${o}</option>`).join('')}</select></div></div>`).join('')}</div>`).join('')}</div>`;
     } else {
-      const groups=[['Pre event',x=>x.o<0],['During event',x=>x.o===0],['Post event',x=>x.o>0]];
+      const hasG=ts.some(x=>x.grp);
+      const groups=hasG?[...new Set(['Save the date','Registration flyer','Dossier & thumbnails','Main creative','Event pieces',...ts.map(x=>x.grp||'Other')])].filter(g=>ts.some(x=>(x.grp||'Other')===g)).map(g=>[g,x=>(x.grp||'Other')===g]):[['Pre event',x=>x.o<0],['During event',x=>x.o===0],['Post event',x=>x.o>0]];
       body=filters+groups.map(([g,fn])=>{const rows=f.filter(fn);if(!rows.length)return '';
         return `<div class="grid" style="gap:8px"><div class="row between"><h3>${g}</h3><span class="faint num">${rows.filter(done).length}/${rows.length} done</span></div>
         <div class="tbl-wrap"><table><thead><tr><th>Activity</th><th>Norm</th><th>Due</th><th>Department</th><th>Collateral</th><th>Lead</th><th>Status</th></tr></thead><tbody>
         ${rows.map(x=>`<tr><td style="min-width:220px"><b style="font-weight:600">${esc(x.t)}</b>${x.note?`<div class="faint" style="font-size:.78rem">${esc(x.note)}</div>`:''}${x.x==='Internal'?' <span class="pill" style="font-size:.68rem">Internal</span>':''}</td>
-          <td class="faint num">${dLabel(x.o)}</td>
-          <td><div class="row" style="gap:4px;flex-wrap:nowrap"><input type="date" id="due-${x.id}" value="${x.due}" onchange="setDue('${x.id}',this.value)" ${isAdmin()||x.l1===ME()?'':'disabled'} style="${x.due<TODAY&&!done(x)?'border-color:var(--bad);color:var(--bad)':''}">${x.edited?`<span class="pill gd" title="Changed by hand">edited</span>`:''}</div></td>
+          <td class="faint num" style="white-space:nowrap">${x.tbd?'—':dLabel(x.o)+(Math.abs(x.o)>=14&&x.o%7===0?` <span style="font-size:.75rem">(${-x.o/7} wk)</span>`:'')}</td>
+          <td><div class="row" style="gap:4px;flex-wrap:nowrap">${x.tbd?'<span class="pill warn">Date TBC</span>':''}<input type="date" id="due-${x.id}" value="${x.tbd?'':x.due}" onchange="setDue('${x.id}',this.value)" ${isAdmin()||x.l1===ME()?'':'disabled'} style="${x.due<TODAY&&!done(x)?'border-color:var(--bad);color:var(--bad)':''}">${x.edited?`<span class="pill gd" title="Changed by hand">edited</span>`:''}</div></td>
           <td class="muted">${esc(x.dept)}</td><td class="muted">${esc(x.col)}</td>
           <td style="white-space:nowrap">${esc(x.l1)}${x.l2?`<span class="faint"> + ${esc(x.l2)}</span>`:''}</td>
           <td><select aria-label="Status" onchange="setSt('${x.id}',this.value)" class="st-${STCLS[x.st]}">${STATUSES.map(o=>`<option ${o===x.st?'selected':''}>${o}</option>`).join('')}</select></td></tr>`).join('')}
@@ -673,7 +651,7 @@ V.event=()=>{
   ${body}`;
 };
 function setSt(id,v){S.tasks.find(x=>x.id===id).st=v;save();render()}
-function setDue(id,v){const x=S.tasks.find(x=>x.id===id);if(!v)return;x.due=v;x.edited=v!==addDays(evById(x.ev).date,x.o);save();render()}
+function setDue(id,v){const x=S.tasks.find(x=>x.id===id);if(!v)return;x.due=v;if(x.tbd){x.tbd=false;x.o=diff(v,evById(x.ev).date)}x.edited=v!==addDays(evById(x.ev).date,x.o);save();render()}
 function setEvDate(id,v){if(!v)return;const e=evById(id);e.date=v;let kept=0;for(const x of tasksOf(id)){if(x.edited){kept++;continue}x.due=addDays(v,x.o)}save();render();toast(`Dates recalculated${kept?` · ${kept} hand-edited kept`:''}`)}
 function addRole(){const w=$('rwho').value,r=$('rrole').value.trim();if(!r)return;(S.roles[S.ev]=S.roles[S.ev]||[]).push([w,r]);save();render()}
 function delRole(i){S.roles[S.ev].splice(i,1);save();render()}
@@ -708,7 +686,7 @@ V.calendar=()=>{
   const [y,m]=calM.split('-').map(Number); const first=new Date(y,m-1,1); const start=new Date(first); start.setDate(1-((first.getDay()+6)%7));
   const days=[];for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);days.push(iso(d))}
   const mineOnly=calMine;
-  const cells=days.map(ds=>{const evs=S.events.filter(e=>e.date===ds||(e.end&&ds>e.date&&ds<=e.end));const tks=S.tasks.filter(x=>x.due===ds&&(!mineOnly||x.l1===ME()||x.l2===ME()));
+  const cells=days.map(ds=>{const evs=S.events.filter(e=>e.date===ds||(e.end&&ds>e.date&&ds<=e.end));const tks=S.tasks.filter(x=>!x.tbd&&x.due===ds&&(!mineOnly||x.l1===ME()||x.l2===ME()));
     return `<div class="d ${ds.slice(0,7)!==calM?'out':''} ${ds===TODAY?'today':''}"><span class="n num">${parse(ds).getDate()}</span>
     ${evs.map(e=>`<div class="it ev" onclick="go('event','${e.id}')" title="${esc(e.name)}">${esc(e.name)}</div>`).join('')}
     ${tks.slice(0,3).map(x=>`<div class="it tk ${done(x)?'done':''}" title="${esc(x.t)} · ${esc(evById(x.ev).name)}" onclick="evTab='tracker';go('event','${x.ev}')">${esc(x.t)}</div>`).join('')}
@@ -1126,7 +1104,7 @@ V.templates=()=>{
   <div class="note">${ic('info')}<div>Each event type has its own task list. “Days from event” sets the default due date (−13 means 13 days before). New events use these norms. Existing events are not changed.</div></div>
   <div class="row"><select id="tplt" onchange="tplType=this.value;render()" style="width:auto">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${k===tplType?'selected':''}>${v.label}</option>`).join('')}</select><span class="faint">${rows.length} tasks · starts ${Math.abs(Math.min(...rows.map(r=>r.o)))} days before</span><div style="flex:1"></div><button class="btn pri" onclick="addTplRow()">${ic('plus')}Add task</button></div>
   <div class="tbl-wrap"><table><thead><tr><th>Days from event</th><th>Activity</th><th>Department</th><th>Collateral</th><th>Lead</th><th>Support</th><th></th></tr></thead><tbody>
-  ${rows.map(r=>`<tr><td><input type="number" id="to-${r.id}" value="${r.o}" style="width:80px" onchange="tplSet('${r.id}','o',+this.value)"></td>
+  ${rows.map(r=>`<tr><td><input type="number" id="to-${r.id}" value="${r.o}" style="width:80px" ${r.tbd?'title="Date to be confirmed per event"':''} onchange="tplSet('${r.id}','o',+this.value)"></td>
    <td><input type="text" id="tt-${r.id}" value="${esc(r.t)}" style="min-width:220px" onchange="tplSet('${r.id}','t',this.value)"></td>
    <td><select id="td-${r.id}" onchange="tplSet('${r.id}','dept',this.value)">${DEPTS.map(d=>`<option ${d===r.dept?'selected':''}>${d}</option>`).join('')}</select></td>
    <td><input type="text" id="tc-${r.id}" value="${esc(r.col)}" style="width:140px" onchange="tplSet('${r.id}','col',this.value)"></td>

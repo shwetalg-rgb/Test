@@ -61,6 +61,8 @@ create table task_templates (
   lead_id       uuid references team_members(id) on delete set null,
   support_id    uuid references team_members(id) on delete set null,
   offset_days   int  not null,              -- -13 = 13 days before the start date; 0 = D-day; +2 = after
+  date_tbc      boolean not null default false, -- event pieces whose dates are set per event later
+  stage_group   text,                      -- 'Save the date', 'Registration flyer', 'Dossier & thumbnails', 'Event pieces'
   sort          int  not null default 0
 );
 
@@ -90,6 +92,8 @@ create table tasks (
   offset_days    int  not null,
   due_date       date not null,
   due_overridden boolean not null default false,  -- set when someone edits the date by hand
+  date_tbc       boolean not null default false,  -- date not decided yet (shown as 'Date TBC')
+  stage_group    text,
   status         task_status not null default 'To start',
   note           text,
   updated_at     timestamptz not null default now()
@@ -102,9 +106,9 @@ create or replace function generate_tasks() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   insert into tasks (event_id, template_id, title, department, collateral, audience,
-                     lead_id, support_id, offset_days, due_date)
+                     lead_id, support_id, offset_days, due_date, date_tbc, stage_group)
   select new.id, t.id, t.title, t.department, t.collateral, t.audience,
-         t.lead_id, t.support_id, t.offset_days, new.start_date + t.offset_days
+         t.lead_id, t.support_id, t.offset_days, new.start_date + t.offset_days, t.date_tbc, t.stage_group
   from task_templates t where t.event_type = new.type;
   return new;
 end $$;
@@ -130,6 +134,10 @@ language plpgsql as $$
 declare d date;
 begin
   select start_date into d from events where id = new.event_id;
+  if old.date_tbc then              -- first real date for a TBC item: it becomes the norm
+    new.date_tbc := false;
+    new.offset_days := new.due_date - d;
+  end if;
   new.due_overridden := new.due_date <> d + new.offset_days;
   new.updated_at := now();
   return new;

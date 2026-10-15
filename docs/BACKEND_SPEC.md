@@ -47,7 +47,22 @@ All of this is enforced in the database with row-level security (see `supabase/s
 ## 3. Modules and the logic to build
 
 ### 3.1 Events and workflow tracker
-- **Event types:** Smilescapes (runway 15 days), Prem Mahotsav, Anand Mahotsav, Sarvarpan Divas, Guru Purnima, Paryushan (90 days), RPL (45 days).
+- **Two tracks:**
+  - **Smilescapes** (1–2 a month, anywhere) has its own template, based on the 10 Oct tracker (about 15 days of runway).
+  - **All other events** (RPL, Prem Mahotsav, Anand Mahotsav, US Travel, Sarvarpan Divas, Guru Purnima, Paryushan) follow the **Gennext events calendar**.
+- **Events calendar.** Every creative milestone is due a set number of **weeks before the event**:
+
+  | Milestone | Save the date | Registration flyer | Dossier & thumbnails |
+  |---|---|---|---|
+  | Kick-off | 11 | 14 | — |
+  | Referencing | 11 | 12 | — |
+  | First draft | 10 | 10 | — |
+  | Achira's iteration | 10 | 8.5 | 6 |
+  | Sending to events team | 9 | 8 | 5 |
+  | Go live | 8 | 6 | 3 |
+
+  **Event pieces:** Opening ceremony, Activation (e.g. Prem Mahotsav: Networking), Big event (e.g. Sarvarpan Divas: Play), Event coverage and Event highlights. Their dates are **TBC** and are set per event (`date_tbc`). The first date entered becomes the norm for that task.
+- The tracker list is grouped by creative (Save the date / Registration flyer / Dossier & thumbnails / Event pieces) for calendar events, and by Pre / During / Post for Smilescapes.
 - Each event type has a **template**: a list of tasks with department, collateral, external/internal, lead, support, and **offset in days** from the event start (−13 = 13 days before; 0 = D-day; +2 = after).
 - **Creating an event generates its tracker:** due date = start date + offset. *(DB trigger `generate_tasks`, already done.)*
 - **Changing the event date recalculates** every task date except dates edited by hand, which are flagged `due_overridden`. *(Triggers already done.)*
@@ -144,14 +159,13 @@ Storage buckets: `bills`, `quotations`, `moments`, `creatives`, `budget-docs`, `
 
 ## 5. Starting data (`supabase/seed.sql`)
 
-- 7 event types and 10 team members.
+- 8 event types (including US Travel) and 10 team members.
 - Templates: the Smilescapes template is based on the 10 Oct tracker; RC and RPL templates are drafts.
 - Events:
   - Pause at the Promenade (26 Sep, done) and Smilescapes on Wheels (10 Oct, done).
   - Smilescapes 31 Oct.
-  - Prem Mahotsav (31 Dec), with the current work: main creative approval due 17 Oct, then dossier and thumbnails, and the opening ceremony (show to Achira 17 Oct, core idea 20 Oct, grand rehearsal 30 Nov).
-  - RPL (25–27 Dec) and Anand Mahotsav (15–17 Feb).
-  - Sarvarpan, Guru Purnima and Paryushan, with tentative dates.
+  - Prem Mahotsav (31 Dec): the events-calendar milestones, plus the current work (main creative approval due 17 Oct; opening ceremony: show to Achira 17 Oct, core idea 20 Oct, grand rehearsal 30 Nov).
+  - From the events calendar: RPL (25–27 Dec), Anand Mahotsav (15–17 Feb; the calendar sheet says 16 Feb), US Travel (1 Apr), Sarvarpan Divas (31 May), Guru Purnima (20 Jul) and Paryushan (28 Aug 2027).
 - D-Day roles, event flow and the reel script for Smilescapes on Wheels; Pujya Nileshbhai's and Achira's Smilescapes guidance.
 - The FY 2026-27 approved budget, all lines, and a draft breakdown.
 
@@ -177,4 +191,5 @@ Storage buckets: `bills`, `quotations`, `moments`, `creatives`, `budget-docs`, `
 - Who besides Shweta and Saransh should be admin?
 - Do reminders go out on WhatsApp (needs a WhatsApp Business provider) or email?
 - What are the real creative guidelines?
-- What are the confirmed dates for Sarvarpan Divas, Guru Purnima and Paryushan 2027?
+- What are the dates for the event pieces (opening ceremony, activation, big event, coverage, highlights) for each event?
+- Is Anand Mahotsav 15–17 Feb or 16 Feb?
