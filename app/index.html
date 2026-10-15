@@ -325,7 +325,7 @@ const RPL_ROWS=[
 ];
 
 /* ---------- state ---------- */
-const KEY='gennext-events-v6';
+const KEY='gennext-events-v7';
 let S;
 function seed(){
   const tpl={};
@@ -339,9 +339,9 @@ function seed(){
    {id:'e3',type:'prem',name:'Prem Mahotsav 2026',date:'2026-12-31',venue:'RC, Khopoli'},
    {id:'e4',type:'rpl',name:'RPL 2026',date:'2026-12-25',end:'2026-12-27',venue:'RC grounds, Khopoli'},
    {id:'e5',type:'anand',name:'Anand Mahotsav 2027',date:'2027-02-15',end:'2027-02-17',venue:'RC, Khopoli'},
-   {id:'e6',type:'sarvarpan',name:'Sarvarpan Divas 2027',date:'2027-05-30',venue:'RC, Khopoli'},
-   {id:'e7',type:'guru',name:'Guru Purnima 2027',date:'2027-07-18',venue:'RC, Khopoli'},
-   {id:'e8',type:'paryushan',name:'Paryushan 2027',date:'2027-08-29',venue:'RC, Khopoli'},
+   {id:'e6',type:'sarvarpan',name:'Sarvarpan Divas 2027',date:'2027-05-30',venue:'RC, Khopoli',tentative:true},
+   {id:'e7',type:'guru',name:'Guru Purnima 2027',date:'2027-07-18',venue:'RC, Khopoli',tentative:true},
+   {id:'e8',type:'paryushan',name:'Paryushan 2027',date:'2027-08-29',venue:'RC, Khopoli',tentative:true},
   ];
   S={role:'admin',lang:'en',view:'home',ev:null,tpl,events,tasks:[],
     roles:{e1:[['Saransh','Host'],['Anjal','Shoot content'],['Natasha','Shoot content'],['Shweta','Base station'],['Devanshi','Treasure hunt – statue'],['Param','Smiley balloon – North'],['Shriya','Smiley balloon – South']],
@@ -590,7 +590,7 @@ V.home=()=>{
 const evCard=e=>{const p=progress(e.id),d=diff(e.date,TODAY);const past=d<0;
   return `<div class="card evcard" onclick="go('event','${e.id}')">
   <div class="row" style="flex-wrap:nowrap">${evTag(e)}<div style="min-width:0"><div style="font-weight:600;line-height:1.25">${esc(e.name)}</div><div class="faint" style="font-size:.82rem">${evDates(e)} · ${esc(e.venue)}</div></div></div>
-  <div class="row between" style="font-size:.82rem"><span class="pill ${past?'ok':d<=14?'sf':''}">${past?'Completed':d===0?'Today':d+' days to go'}</span><span class="num muted">${p}% done</span></div>
+  <div class="row between" style="font-size:.82rem"><span class="pill ${past?'ok':d<=14?'sf':''}">${past?'Completed':d===0?'Today':d+' days to go'}</span><span class="row" style="gap:6px">${e.tentative?'<span class="pill warn" title="Date not confirmed yet">Tentative date</span>':''}<span class="num muted">${p}% done</span></span></div>
   <div class="bar ${past?'ok':''}"><i style="width:${p}%"></i></div></div>`};
 function quickDone(id){const x=S.tasks.find(t=>t.id===id);x.st='Closed';save();render();toast('Marked closed')}
 
