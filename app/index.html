@@ -431,7 +431,7 @@ function seed(){
     },
   };
   S.annual=seedAnnual();
-  S.expenses.push({id:uid(),ev:'e1',item:'Parking & tolls',head:'Travel',vendor:'',quote:0,amt:650,by:'Shweta',bill:false,file:'',date:'2026-10-10'},{id:uid(),ev:'e3',item:'Volunteer badges (sample)',head:'Badges',vendor:'v3',quote:4000,amt:3800,by:'Shriya',bill:true,file:'badges.pdf',date:'2026-10-13'});
+  S.expenses.push({id:uid(),ev:'e1',item:'Reel shoot & edit – Cycling by the Sea',head:'Content shoot & edit',vendor:'',quote:5000,amt:5000,by:'Saransh',bill:true,file:'shoot-invoice.pdf',date:'2026-10-11'},{id:uid(),ev:'e1',item:'WhatsApp campaign – registrations',head:'WhatsApp',vendor:'',quote:2068,amt:2068,by:'Saransh',bill:true,file:'interakt.pdf',date:'2026-09-27'},{id:uid(),ev:'e2',item:'Experience giveaways – 120 pcs',head:'Experience giveaways',vendor:'',quote:1800,amt:1800,by:'Shriya',bill:false,file:'',date:'2026-10-14'},{id:uid(),ev:'e1',item:'Parking & tolls',head:'Travel',vendor:'',quote:0,amt:650,by:'Shweta',bill:false,file:'',date:'2026-10-10'},{id:uid(),ev:'e3',item:'Volunteer badges (sample)',head:'Badges',vendor:'v3',quote:4000,amt:3800,by:'Shriya',bill:true,file:'badges.pdf',date:'2026-10-13'});
   for(const e of events) genTasks(e);
   // seed statuses
   let k=0;
@@ -448,17 +448,20 @@ function seed(){
 function genTasks(e){
   for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:''});
 }
-function seedAnnual(){const L=[];const add=(ev,o)=>{for(const [c,a] of Object.entries(o))L.push({id:uid(),ev,cat:c,approved:a})};
-  add('smilescapes',{'Programming':180000,'Food':300000,'Props':60000,'Printing':24000,'Team':18000});
-  add('prem',{'Decor':350000,'Sound & light':150000,'Printing':80000,'Marketing':60000,'Props':40000,'Team':30000});
-  add('anand',{'Decor':250000,'Sound & light':120000,'Printing':60000,'Marketing':40000,'Props':30000});
-  add('sarvarpan',{'Decor':150000,'Printing':40000,'Marketing':30000});
-  add('guru',{'Decor':200000,'Sound & light':100000,'Printing':50000,'Marketing':30000});
-  add('paryushan',{'Decor':120000,'Printing':60000,'Marketing':25000});
-  add('rpl',{'Programming':80000,'Props':60000,'Food':50000,'Marketing':15000});
-  add('general',{'Marketing':100000,'Team':40000,'Travel':60000});
-  return {fy:'2026-27',month:'April 2026',lines:L}}
-function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(!S.annual)S.annual=seedAnnual();return}}catch(e){} seed()}
+function seedAnnual(){const L=[];
+  const r=(sec,vertical,nature,item,freq,qty,unitLbl,unit,approved,fy26,fy26act)=>L.push({id:uid(),sec,vertical,nature,item,freq,qty,unitLbl,unit,approved,fy26,fy26act});
+  r(1,'ALL','—','Envato Elements','Recurring annually',1,'subscription',20000,20000,20000,20000);
+  r(2,'Project Smilestones','Offline promotions','Merchandise','One-time',0,'',0,0,10250,13950);
+  r(2,'Project Smilestones','Offline promotions','Experience giveaways','Campaign based',500,'pcs',15,7500,50000,712);
+  r(2,'Project Smilestones','Offline promotions','Plant saplings','Campaign based',50,'pcs',600,30000,0,0);
+  r(2,'Project Smilestones','Offline promotions','Marketing material','Campaign based',25,'pcs',500,12500,30000,0);
+  r(3,'Project Smilestones','Online promotions','WhatsApp','Campaign based',12,'campaigns',2068,24816,21000,17955);
+  r(3,'Project Smilestones','Online promotions','WhatsApp bulk message','Quarterly',60000,'messages',0.7,42000,14000,70);
+  r(3,'Project Smilestones','Online promotions','META Ads','Campaign based',0,'',0,0,96000,0);
+  r(3,'Project Smilestones','Online promotions','Content shoot & edit','Campaign based',20,'campaigns',5000,100000,70000,0);
+  r(4,'Events','—','Petty expenses (Adbhutam club idea)','One-time',0,'',0,0,20000,20000);
+  return {v:2,title:'Gennext Budget Summary',fy:'2026-27',period:'Apr 2026 – Mar 2027',submitted:'3 May 2026 · Shweta Jain',approvedTotal:250000,approvedOn:'5 May 2026',lines:L}}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(!S.annual||S.annual.v!==2)S.annual=seedAnnual();return}}catch(e){} seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- i18n (labels) ---------- */
@@ -735,7 +738,7 @@ V.expenses=()=>{
 };
 let vq='';
 const vName=id=>(S.vendors.find(v=>v.id===id)||{}).name||'—';
-const heads=ev=>Object.keys(S.heads[ev]||{'General':0});
+const heads=ev=>{const e=evById(ev),v=e?VERT(e.type):'';return [...new Set([...Object.keys(S.heads[ev]||{'General':0}),...S.annual.lines.filter(l=>l.vertical===v||l.vertical==='ALL').map(l=>l.item)])]};
 function addExpense(){modal(`<h2>Log expense</h2>
   <div class="field"><label for="xi">What was it for?</label><input type="text" id="xi" placeholder="e.g. Balloons for photo corner"></div>
   <div class="grid g2" style="gap:10px">
@@ -778,88 +781,110 @@ function budgetBlock(ev,compact){
    <div class="bar ${r.p>100?'bad':r.p>85?'gd':'ok'}"><i style="width:${Math.min(r.p,100)}%"></i></div></div>`).join('')||'<div class="faint">No budget heads yet. Add sanctioned amounts to start tracking.</div>'}
   </div>`;
 }
-let bTab='annual', annEv='', mapQ='all';
-const evLabel=k=>k==='general'?'General / overheads':(TYPES[k]||{}).label||k;
-function autoLine(x){const e=evById(x.ev);if(!e)return null;const L=S.annual.lines,h=(x.head||'').toLowerCase();
-  return L.find(l=>l.ev===e.type&&l.cat.toLowerCase()===h)||L.find(l=>l.ev==='general'&&l.cat.toLowerCase()===h)||null}
+let bTab='annual', annV='', mapQ='all';
+const VERT=type=>type==='smilescapes'?'Project Smilestones':'Events';
+const verts=()=>[...new Set(S.annual.lines.map(l=>l.vertical))];
+function autoLine(x){const e=evById(x.ev);if(!e)return null;const v=VERT(e.type),h=(x.head||'').toLowerCase().trim();
+  return S.annual.lines.find(l=>(l.vertical===v||l.vertical==='ALL')&&(l.item.toLowerCase()===h||l.nature.toLowerCase()===h))||null}
 function lineOf(x){if(x.line==='none')return null;if(x.line)return S.annual.lines.find(l=>l.id===x.line)||autoLine(x);return autoLine(x)}
-const usedOf=l=>S.expenses.filter(x=>{const m=lineOf(x);return m&&m.id===l.id}).reduce((a,b)=>a+b.amt,0);
-const lineOpts=sel=>`<option value="">Auto-match</option>`+Object.keys({...TYPES,general:1}).map(k=>{const ls=S.annual.lines.filter(l=>l.ev===k);return ls.length?`<optgroup label="${esc(evLabel(k))}">${ls.map(l=>`<option value="${l.id}" ${l.id===sel?'selected':''}>${esc(l.cat)}</option>`).join('')}</optgroup>`:''}).join('')+`<option value="none" ${sel==='none'?'selected':''}>Not from the annual budget</option>`;
-function annualTotals(){const L=S.annual.lines;const appr=L.reduce((a,b)=>a+b.approved,0);let used=0,un=[];
-  for(const x of S.expenses){const l=lineOf(x);if(l)used+=x.amt;else if(x.line!=='none')un.push(x)}return {appr,used,un}}
+const expOf=l=>S.expenses.filter(x=>{const m=lineOf(x);return m&&m.id===l.id});
+const usedOf=l=>expOf(l).reduce((a,b)=>a+b.amt,0);
+const lineName=l=>`${l.vertical} · ${l.item}`;
+const lineOpts=sel=>`<option value="">Auto-match</option>`+verts().map(v=>`<optgroup label="${esc(v)}">${S.annual.lines.filter(l=>l.vertical===v).map(l=>`<option value="${l.id}" ${l.id===sel?'selected':''}>${esc(l.item)}${l.nature!=='—'?' ('+esc(l.nature)+')':''}</option>`).join('')}</optgroup>`).join('')+`<option value="none" ${sel==='none'?'selected':''}>Not from the annual budget</option>`;
+function annualTotals(){const L=S.annual.lines;const planned=L.reduce((a,b)=>a+b.approved,0);let used=0,un=[];
+  for(const x of S.expenses){const l=lineOf(x);if(l)used+=x.amt;else if(x.line!=='none')un.push(x)}return {appr:S.annual.approvedTotal||planned,planned,used,un}}
+const barCls=p=>p>100?'bad':p>85?'gd':'ok';
+const planTxt=l=>l.qty&&l.unit?`${l.qty.toLocaleString('en-IN')} ${esc(l.unitLbl)} × ₹${l.unit.toLocaleString('en-IN')}`:'—';
 V.budget=()=>{
   if(!isAdmin()) return V.home();
-  const tabs=`<div class="tabs">${[['annual',`Annual budget · FY ${S.annual.fy}`],['event','Event budgets']].map(x=>`<button class="${bTab===x[0]?'on':''}" onclick="bTab='${x[0]}';render()">${x[1]}</button>`).join('')}</div>`;
+  const A=S.annual;
+  const tabs=`<div class="tabs">${[['annual',`Annual budget · FY ${A.fy}`],['event','Event budgets']].map(x=>`<button class="${bTab===x[0]?'on':''}" onclick="bTab='${x[0]}';render()">${x[1]}</button>`).join('')}</div>`;
   if(bTab==='event') return `<div class="row between"><div><div class="eyebrow">Admin only</div><h1>${t('Budget')}</h1></div>
    <div class="row"><select id="bev" onchange="bEv=this.value;render()" style="width:auto">${S.events.map(e=>`<option value="${e.id}" ${e.id===bEv?'selected':''}>${esc(e.name)}</option>`).join('')}</select>
    <button class="btn pri" onclick="reportModal('${bEv}')">${ic('file')}Event report</button></div></div>${tabs}
   ${budgetBlock(bEv)}`;
-  const {appr,used,un}=annualTotals(); const p=appr?Math.round(used/appr*100):0;
-  const keys=Object.keys({...TYPES,general:1}).filter(k=>S.annual.lines.some(l=>l.ev===k));
-  const byEv=keys.map(k=>{const ls=S.annual.lines.filter(l=>l.ev===k);const a=ls.reduce((s,l)=>s+l.approved,0),u=ls.reduce((s,l)=>s+usedOf(l),0);return {k,ls,a,u}});
-  const cats=[...new Set(S.annual.lines.map(l=>l.cat))].map(c=>{const ls=S.annual.lines.filter(l=>l.cat===c);return {c,a:ls.reduce((s,l)=>s+l.approved,0),u:ls.reduce((s,l)=>s+usedOf(l),0)}}).sort((a,b)=>b.a-a.a);
-  const barCls=p=>p>100?'bad':p>85?'gd':'ok';
-  const mapRows=S.expenses.filter(x=>mapQ==='all'||(mapQ==='un'?(!lineOf(x)&&x.line!=='none'):mapQ==='man'?!!x.line:false)).sort((a,b)=>a.date<b.date?1:-1);
-  return `<div class="row between"><div><div class="eyebrow">Admin only · approved in ${esc(S.annual.month)}</div><h1>${t('Budget')}</h1></div>
+  const {appr,planned,used,un}=annualTotals(); const p=appr?Math.round(used/appr*100):0;
+  const byV=verts().map(v=>{const ls=A.lines.filter(l=>l.vertical===v);return {v,ls,a:ls.reduce((s,l)=>s+l.approved,0),u:ls.reduce((s,l)=>s+usedOf(l),0)}});
+  const byN=[...new Set(A.lines.map(l=>l.nature==='—'?l.vertical:l.nature))].map(n=>{const ls=A.lines.filter(l=>(l.nature==='—'?l.vertical:l.nature)===n);return {n,a:ls.reduce((s,l)=>s+l.approved,0),u:ls.reduce((s,l)=>s+usedOf(l),0)}});
+  const mapRows=S.expenses.filter(x=>mapQ==='all'||(mapQ==='un'?(!lineOf(x)&&x.line!=='none'):!!x.line)).sort((a,b)=>a.date<b.date?1:-1);
+  const meter=(label,u,a)=>{const q=a?Math.round(u/a*100):0;return `<div class="grid" style="gap:5px"><div class="row between"><b>${esc(label)}</b><span class="num muted">${inr(u)} <span class="faint">/ ${inr(a)}</span></span></div><div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div></div>`};
+  return `<div class="row between"><div><div class="eyebrow">${esc(A.title)} · ${esc(A.period)}</div><h1>${t('Budget')}</h1></div>
    <div class="row"><button class="btn" onclick="uploadAnnual()">${ic('up')}Upload approved budget</button><button class="btn pri" onclick="annualReport()">${ic('file')}Budget report</button></div></div>${tabs}
-  <div class="note">${ic('info')}<div>Every expense logged under an event goes into this sheet automatically. It is matched on <b>event type + budget head</b> (e.g. Prem Mahotsav · Decor). You can move any expense to a different line under <b>Review how expenses are assigned</b> below.</div></div>
+  <div class="card row between" style="border-color:var(--gold)"><div class="row" style="flex-wrap:nowrap"><span class="pill ok">Approved</span><div><b>${inr(appr)}</b> approved on ${esc(A.approvedOn)} <span class="faint">· proposed ${inr(planned)} · submitted ${esc(A.submitted)}</span></div></div><button class="btn sm" onclick="editApproval()">Edit</button></div>
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
-   ${[['Approved for the year',inr(appr),S.annual.lines.length+' budget lines'],['Used so far',inr(used),p+'% of approved'],['Remaining',inr(appr-used),appr-used<0?'Over budget':'Available'],['Not assigned',un.length,un.length?'expenses need a budget line':'All expenses assigned']].map(([k,v,s],i)=>`<div class="card"><div class="eyebrow">${k}</div><div class="num" style="font-size:1.45rem;font-weight:600;${i===3&&un.length?'color:var(--bad)':''}">${v}</div><div class="faint" style="font-size:.8rem">${s}</div></div>`).join('')}
+   ${[['Approved for the year',inr(appr),`${inr(planned)} planned · ${inr(appr-planned)} buffer`],['Used so far',inr(used),p+'% of approved'],['Remaining',inr(appr-used),appr-used<0?'Over budget':'Available'],['Not assigned',un.length,un.length?'expenses outside any budget line':'All expenses assigned']].map(([k,v,s],i)=>`<div class="card"><div class="eyebrow">${k}</div><div class="num" style="font-size:1.45rem;font-weight:600;${i===3&&un.length?'color:var(--warn)':''}">${v}</div><div class="faint" style="font-size:.8rem">${s}</div></div>`).join('')}
   </div>
   <div class="card grid" style="gap:8px"><div class="row between"><h3>Used across the year</h3><span class="num muted">${p}%</span></div><div class="bar ${barCls(p)}" style="height:10px"><i style="width:${Math.min(p,100)}%"></i></div></div>
   <div class="grid g2" style="align-items:start">
-   <div class="card grid" style="gap:12px"><h3>By event</h3>${byEv.map(r=>{const q=r.a?Math.round(r.u/r.a*100):0;return `<div class="grid" style="gap:5px;cursor:pointer" onclick="annEv=annEv==='${r.k}'?'':'${r.k}';render()"><div class="row between"><b>${esc(evLabel(r.k))}</b><span class="num muted">${inr(r.u)} <span class="faint">/ ${inr(r.a)}</span></span></div><div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div></div>`}).join('')}</div>
-   <div class="card grid" style="gap:12px"><h3>By category</h3>${cats.map(r=>{const q=r.a?Math.round(r.u/r.a*100):0;return `<div class="grid" style="gap:5px"><div class="row between"><b>${esc(r.c)}</b><span class="num muted">${inr(r.u)} <span class="faint">/ ${inr(r.a)}</span></span></div><div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div></div>`}).join('')}</div>
+   <div class="card grid" style="gap:12px"><h3>By vertical</h3>${byV.map(r=>meter(r.v,r.u,r.a)).join('')}</div>
+   <div class="card grid" style="gap:12px"><h3>By nature of expense</h3>${byN.map(r=>meter(r.n,r.u,r.a)).join('')}</div>
   </div>
-  <div class="grid" style="gap:8px"><div class="row between"><h3>Budget sheet · approved vs used</h3><button class="btn sm" onclick="addLine()">${ic('plus')}Add line</button></div>
-  <div class="tbl-wrap"><table><thead><tr><th>Event</th><th>Category</th><th>Approved</th><th>Used</th><th>Remaining</th><th style="min-width:110px">Used %</th><th>Expenses</th></tr></thead><tbody>
-  ${byEv.filter(r=>!annEv||r.k===annEv).map(r=>r.ls.map((l,i)=>{const u=usedOf(l),q=l.approved?Math.round(u/l.approved*100):0,n=S.expenses.filter(x=>{const m=lineOf(x);return m&&m.id===l.id}).length;
-   return `<tr><td>${i===0?`<b>${esc(evLabel(r.k))}</b>`:''}</td><td>${esc(l.cat)}</td><td><input type="number" id="la-${l.id}" value="${l.approved}" style="width:110px;padding:3px 6px" onchange="setLine('${l.id}',+this.value)"></td><td class="num">${inr(u)}</td><td class="num" style="${l.approved-u<0?'color:var(--bad)':''}">${inr(l.approved-u)}</td><td><div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div></td><td class="num faint">${n}</td></tr>`}).join('')+`<tr style="background:var(--sunk)"><td></td><td><b>Total</b></td><td class="num"><b>${inr(r.a)}</b></td><td class="num"><b>${inr(r.u)}</b></td><td class="num"><b>${inr(r.a-r.u)}</b></td><td></td><td></td></tr>`).join('')}
-  </tbody></table></div>${annEv?`<button class="btn ghost sm" onclick="annEv='';render()" style="justify-self:start">Show all events</button>`:''}</div>
+  <div class="note">${ic('info')}<div>Expenses logged under an event are added here automatically. They are matched on the event's vertical (Smilescapes → Project Smilestones; RC events → Events) and the budget head picked when logging (e.g. "Content shoot & edit"). You can move any expense to a different line below.</div></div>
+  <div class="grid" style="gap:8px"><div class="row between"><h3>Budget sheet · approved vs used</h3><div class="row"><select id="annv" onchange="annV=this.value;render()" style="width:auto"><option value="">All verticals</option>${verts().map(v=>`<option ${v===annV?'selected':''}>${esc(v)}</option>`).join('')}</select><button class="btn sm" onclick="addLine()">${ic('plus')}Add line</button></div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Vertical</th><th>Nature</th><th>Line item</th><th>Frequency</th><th>Plan</th><th>Approved FY27</th><th>Used</th><th>Remaining</th><th style="min-width:100px">Used %</th><th>FY26 approved / actual</th></tr></thead><tbody>
+  ${byV.filter(r=>!annV||r.v===annV).map(r=>r.ls.map((l,i)=>{const u=usedOf(l),q=l.approved?Math.round(u/l.approved*100):(u?999:0);
+   return `<tr><td>${i===0?`<b>${esc(r.v)}</b>`:''}</td><td class="muted">${l.nature==='—'||(i>0&&r.ls[i-1].nature===l.nature)?'':esc(l.nature)}</td><td><b style="font-weight:600">${esc(l.item)}</b> <span class="faint num" style="font-size:.78rem">${expOf(l).length?'· '+expOf(l).length+' exp.':''}</span></td><td class="faint">${esc(l.freq)}</td><td class="faint num" style="white-space:nowrap">${planTxt(l)}</td>
+   <td><input type="number" id="la-${l.id}" value="${l.approved}" style="width:100px;padding:3px 6px" onchange="setLine('${l.id}',+this.value)"></td><td class="num">${inr(u)}</td><td class="num" style="${l.approved-u<0?'color:var(--bad)':''}">${inr(l.approved-u)}</td><td>${l.approved?`<div class="bar ${barCls(q)}"><i style="width:${Math.min(q,100)}%"></i></div>`:u?'<span class="pill bad">Not budgeted</span>':''}</td><td class="faint num" style="white-space:nowrap">${inr(l.fy26)} / ${inr(l.fy26act)}</td></tr>`}).join('')+`<tr style="background:var(--sunk)"><td></td><td></td><td><b>Total · ${esc(r.v)}</b></td><td></td><td></td><td class="num"><b>${inr(r.a)}</b></td><td class="num"><b>${inr(r.u)}</b></td><td class="num"><b>${inr(r.a-r.u)}</b></td><td></td><td class="faint num">${inr(r.ls.reduce((s,l)=>s+l.fy26,0))} / ${inr(r.ls.reduce((s,l)=>s+l.fy26act,0))}</td></tr>`).join('')}
+  ${annV?'':`<tr><td></td><td></td><td><b>Grand total (proposed)</b></td><td></td><td></td><td class="num"><b>${inr(planned)}</b></td><td class="num"><b>${inr(used)}</b></td><td class="num"><b>${inr(planned-used)}</b></td><td></td><td></td></tr><tr style="background:var(--gold-soft)"><td></td><td></td><td><b>Approved total</b></td><td></td><td></td><td class="num"><b>${inr(appr)}</b></td><td></td><td class="num"><b>${inr(appr-used)}</b></td><td></td><td></td></tr>`}
+  </tbody></table></div></div>
   <div class="grid" style="gap:8px"><div class="row between"><h3>Review how expenses are assigned</h3>
    <div class="seg">${[['all','All'],['un',`Not assigned (${un.length})`],['man','Changed by hand']].map(x=>`<button class="${mapQ===x[0]?'on':''}" onclick="mapQ='${x[0]}';render()">${x[1]}</button>`).join('')}</div></div>
   <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Event</th><th>Expense</th><th>Head</th><th>Amount</th><th>Counts against</th></tr></thead><tbody>
   ${mapRows.map(x=>{const l=lineOf(x),e=evById(x.ev);return `<tr><td class="num faint">${fmt(x.date)}</td><td>${esc(e?e.name:'')}</td><td>${esc(x.item)}</td><td class="muted">${esc(x.head)}</td><td class="num"><b>${inr(x.amt)}</b></td>
-   <td><div class="row" style="gap:6px;flex-wrap:nowrap"><select id="map-${x.id}" aria-label="Budget line" onchange="setMap('${x.id}',this.value)" style="max-width:260px">${lineOpts(x.line||'')}</select>${x.line?'<span class="pill gd">manual</span>':l?`<span class="pill ok" title="Auto-matched">${esc(evLabel(l.ev))} · ${esc(l.cat)}</span>`:x.line==='none'?'':'<span class="pill bad">No match</span>'}</div></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Nothing here.</td></tr>'}
+   <td><div class="row" style="gap:6px;flex-wrap:nowrap"><select id="map-${x.id}" aria-label="Budget line" onchange="setMap('${x.id}',this.value)" style="max-width:240px">${lineOpts(x.line||'')}</select>${x.line&&x.line!=='none'?'<span class="pill gd">manual</span>':l?`<span class="pill ok">${esc(l.item)}</span>`:x.line==='none'?'':'<span class="pill warn">No match</span>'}</div></td></tr>`}).join('')||'<tr><td colspan="6" class="empty">Nothing here.</td></tr>'}
   </tbody></table></div></div>
-  <div class="card grid" style="gap:8px"><h3>Report format</h3><div class="muted">Upload the report template you submit (Excel or Word). Reports will be filled into that layout once the backend is connected.</div>
-  <div class="row"><input type="file" id="rtpl" accept=".xlsx,.xls,.docx,.pdf" onchange="S.rtpl=this.files[0]&&this.files[0].name;save();render()" style="max-width:320px">${S.rtpl?`<span class="pill ok">Template: ${esc(S.rtpl)}</span>`:'<span class="pill">Using default format</span>'}</div></div>`;
+  <div class="card grid" style="gap:8px"><h3>Report format</h3><div class="muted">The budget report follows your Gennext Budget Summary layout (vertical → nature → line item, with FY26 and FY27 columns). Upload a different template here if the format changes.</div>
+  <div class="row"><input type="file" id="rtpl" accept=".xlsx,.xls,.docx,.pdf" onchange="S.rtpl=this.files[0]&&this.files[0].name;save();render()" style="max-width:320px">${S.rtpl?`<span class="pill ok">Template: ${esc(S.rtpl)}</span>`:'<span class="pill">Gennext Budget Summary format</span>'}</div></div>`;
 };
 function setLine(id,v){S.annual.lines.find(l=>l.id===id).approved=v||0;save();render()}
 function setMap(id,v){S.expenses.find(x=>x.id===id).line=v;save();render();toast(v?'Expense moved':'Back to auto-match')}
-function addLine(){modal(`<h2>Add budget line</h2>
-  <div class="field"><label for="ale">Event</label><select id="ale">${Object.keys({...TYPES,general:1}).map(k=>`<option value="${k}">${esc(evLabel(k))}</option>`).join('')}</select></div>
-  <div class="field"><label for="alc">Category</label><input type="text" id="alc" list="catlist" placeholder="e.g. Decor"><datalist id="catlist">${[...new Set(S.annual.lines.map(l=>l.cat))].map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>
-  <div class="field"><label for="ala">Approved (₹)</label><input type="number" id="ala"></div>
-  <div class="row"><button class="btn pri" onclick="S.annual.lines.push({id:uid(),ev:$('ale').value,cat:$('alc').value.trim()||'General',approved:+$('ala').value||0});closeModal();save();render()">Add line</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function editApproval(){const A=S.annual;modal(`<h2>Approval details</h2><div class="grid g2" style="gap:10px">
+  <div class="field"><label for="apt">Approved total (₹)</label><input type="number" id="apt" value="${A.approvedTotal}"></div>
+  <div class="field"><label for="apo">Approved on</label><input type="text" id="apo" value="${esc(A.approvedOn)}"></div>
+  <div class="field"><label for="apfy">Financial year</label><input type="text" id="apfy" value="${esc(A.fy)}"></div>
+  <div class="field"><label for="app">Period</label><input type="text" id="app" value="${esc(A.period)}"></div></div>
+  <div class="field"><label for="aps">Signed approval (photo or PDF)</label><input type="file" id="aps" accept="image/*,.pdf"></div>
+  <div class="row"><button class="btn pri" onclick="Object.assign(S.annual,{approvedTotal:+$('apt').value||0,approvedOn:$('apo').value,fy:$('apfy').value,period:$('app').value});closeModal();save();render()">Save</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function addLine(){modal(`<h2>Add budget line</h2><div class="grid g2" style="gap:10px">
+  <div class="field"><label for="alv">Vertical</label><input type="text" id="alv" list="vlist" value="Project Smilestones"><datalist id="vlist">${verts().map(v=>`<option value="${esc(v)}">`).join('')}</datalist></div>
+  <div class="field"><label for="aln">Nature of expense</label><input type="text" id="aln" placeholder="Online promotions"></div>
+  <div class="field"><label for="alc">Line item</label><input type="text" id="alc"></div>
+  <div class="field"><label for="alf">Frequency</label><input type="text" id="alf" placeholder="Campaign based"></div>
+  <div class="field"><label for="ala">Approved (₹)</label><input type="number" id="ala"></div></div>
+  <div class="row"><button class="btn pri" onclick="S.annual.lines.push({id:uid(),sec:9,vertical:$('alv').value.trim()||'Events',nature:$('aln').value.trim()||'—',item:$('alc').value.trim()||'New line',freq:$('alf').value,qty:0,unitLbl:'',unit:0,approved:+$('ala').value||0,fy26:0,fy26act:0});closeModal();save();render()">Add line</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
 let upRows=null;
 function uploadAnnual(){upRows=null;modal(`<h2>Upload approved budget</h2>
-  <p class="muted" style="margin:0">Upload the year's approved expense sheet (Excel or CSV). Use one row per budget line, with columns for <b>Event</b>, <b>Category</b> and <b>Approved amount</b>. Rows whose event doesn't match a known event go under General / overheads.</p>
-  <div class="grid g2" style="gap:10px"><div class="field"><label for="afy">Financial year</label><input type="text" id="afy" value="${esc(S.annual.fy)}"></div><div class="field"><label for="amo">Approved in</label><input type="text" id="amo" value="${esc(S.annual.month)}"></div></div>
+  <p class="muted" style="margin:0">Upload the year's budget summary as Excel or CSV, in the same layout as your Gennext Budget Summary: Vertical, Nature of expense, Line item, Frequency, and the proposed or approved amount. "Total" rows are skipped. Blank vertical and nature cells take the value from the row above.</p>
+  <div class="grid g2" style="gap:10px"><div class="field"><label for="afy">Financial year</label><input type="text" id="afy" value="${esc(S.annual.fy)}"></div><div class="field"><label for="aat">Approved total (₹)</label><input type="number" id="aat" value="${S.annual.approvedTotal}"></div></div>
   <div class="field"><label for="af">Budget sheet</label><input type="file" id="af" accept=".xlsx,.xls,.csv" onchange="parseAnnual(this)"></div>
   <div id="aprev"></div>
   <div class="row"><button class="btn pri" id="abtn" disabled style="opacity:.5" onclick="applyAnnual()">Replace budget lines</button><button class="btn" onclick="closeModal()">Cancel</button></div>`,true)}
-function matchType(s){s=String(s||'').toLowerCase();for(const [k,v] of Object.entries(TYPES))if(s.includes(v.label.toLowerCase())||s.includes(k))return k;if(/premotsav|prem/.test(s))return 'prem';return 'general'}
 function parseAnnual(inp){const f=inp.files[0];if(!f)return;if(typeof XLSX==='undefined'){toast('Spreadsheet reader did not load. Try again.');return}
-  const r=new FileReader();r.onload=()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-   if(!rows.length)throw 0;const hs=Object.keys(rows[0]);const find=re=>hs.find(h=>re.test(h.toLowerCase()));
-   const hE=find(/event|programme|program/),hC=find(/categ|head|particular|item/),hA=find(/approv|sanction|amount|budget/);
-   if(!hC||!hA){$('aprev').innerHTML=`<div class="note" style="background:var(--bad-soft)">Couldn't find a Category and an Amount column. Found: ${hs.map(esc).join(', ')}</div>`;return}
-   upRows=rows.map(x=>({id:uid(),ev:hE?matchType(x[hE]):'general',cat:String(x[hC]).trim(),approved:+String(x[hA]).replace(/[^0-9.]/g,'')||0,raw:hE?String(x[hE]):''})).filter(x=>x.cat&&x.approved);
-   $('aprev').innerHTML=`<div class="tbl-wrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>From sheet</th><th>Matched to</th><th>Category</th><th>Approved</th></tr></thead><tbody>${upRows.map(x=>`<tr><td class="faint">${esc(x.raw)}</td><td>${esc(evLabel(x.ev))}</td><td>${esc(x.cat)}</td><td class="num">${inr(x.approved)}</td></tr>`).join('')}</tbody></table></div><div class="faint" style="font-size:.85rem">${upRows.length} lines · total ${inr(upRows.reduce((a,b)=>a+b.approved,0))}</div>`;
-   const b=$('abtn');b.disabled=false;b.style.opacity=1}catch(e){$('aprev').innerHTML='<div class="note" style="background:var(--bad-soft)">That file could not be read. Upload an .xlsx or .csv file.</div>'}};r.readAsArrayBuffer(f)}
-function applyAnnual(){if(!upRows)return;S.annual={fy:$('afy').value||S.annual.fy,month:$('amo').value||S.annual.month,lines:upRows.map(({raw,...x})=>x)};for(const x of S.expenses)if(x.line&&x.line!=='none')x.line='';closeModal();save();render();toast(`${upRows.length} budget lines loaded · expenses re-matched`)}
-function annualReport(){const {appr,used,un}=annualTotals();const keys=Object.keys({...TYPES,general:1}).filter(k=>S.annual.lines.some(l=>l.ev===k));
-  modal(`<div class="row between"><h2>Annual budget report</h2><button class="btn ghost" onclick="closeModal()">${ic('x')}</button></div>
+  const r=new FileReader();r.onload=()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];
+   const grid=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const hi=grid.findIndex(row=>row.some(c=>/line item|particular|categ/i.test(String(c))));
+   if(hi<0)throw 'h';const hs=grid[hi].map(c=>String(c).toLowerCase());const col=re=>hs.findIndex(h=>re.test(h));
+   const cV=col(/vertical/),cN=col(/nature/),cI=col(/line item|particular|categ|item/),cF=col(/freq/);let cA=col(/approv|sanction/);const cP=hs.reduce((k,h,i)=>/proposed|fy ?27|fy2026-27/.test(h)?i:k,-1);if(cP>=0)cA=cP;if(cA<0)cA=col(/amount|budget/);
+   if(cI<0||cA<0){$('aprev').innerHTML=`<div class="note" style="background:var(--bad-soft)">Couldn't find a Line item and an Amount column.</div>`;return}
+   let lv='Events',ln='—';upRows=[];
+   for(const row of grid.slice(hi+1)){const v=String(row[cV]??'').trim(),n=String(row[cN]??'').trim(),it=String(row[cI]??'').trim();if(v)lv=v;if(n)ln=n;
+     if(!it||/total/i.test(it))continue;const amt=+String(row[cA]).replace(/[^0-9.]/g,'')||0;
+     upRows.push({id:uid(),sec:0,vertical:lv,nature:ln,item:it,freq:cF>=0?String(row[cF]):'',qty:0,unitLbl:'',unit:0,approved:amt,fy26:0,fy26act:0})}
+   $('aprev').innerHTML=`<div class="tbl-wrap" style="max-height:260px;overflow:auto"><table><thead><tr><th>Vertical</th><th>Nature</th><th>Line item</th><th>Amount</th></tr></thead><tbody>${upRows.map(x=>`<tr><td>${esc(x.vertical)}</td><td>${esc(x.nature)}</td><td>${esc(x.item)}</td><td class="num">${inr(x.approved)}</td></tr>`).join('')}</tbody></table></div><div class="faint" style="font-size:.85rem">${upRows.length} lines · total ${inr(upRows.reduce((a,b)=>a+b.approved,0))}</div>`;
+   const b=$('abtn');b.disabled=false;b.style.opacity=1}catch(e){$('aprev').innerHTML='<div class="note" style="background:var(--bad-soft)">That file could not be read. Upload an .xlsx or .csv file with a "Line item" column.</div>'}};r.readAsArrayBuffer(f)}
+function applyAnnual(){if(!upRows)return;Object.assign(S.annual,{fy:$('afy').value||S.annual.fy,approvedTotal:+$('aat').value||upRows.reduce((a,b)=>a+b.approved,0),lines:upRows});for(const x of S.expenses)if(x.line&&x.line!=='none')x.line='';closeModal();save();render();toast(`${upRows.length} budget lines loaded · expenses re-matched`)}
+function annualReport(){const A=S.annual;const {appr,planned,used,un}=annualTotals();
+  modal(`<div class="row between"><h2>Budget report</h2><button class="btn ghost" onclick="closeModal()">${ic('x')}</button></div>
   <div class="report">
-   <div class="row between" style="align-items:flex-start"><div><div class="eyebrow">Shrimad Rajchandra Aatma Tatva Research Centre · Gennext events</div><h2>Approved vs used · FY ${esc(S.annual.fy)}</h2><div class="muted">As on ${fmtY(TODAY)}</div></div>${logo(40)}</div>
-   <div class="row" style="gap:24px"><div><div class="eyebrow">Approved</div><b class="num">${inr(appr)}</b></div><div><div class="eyebrow">Used</div><b class="num">${inr(used)}</b></div><div><div class="eyebrow">Remaining</div><b class="num" style="color:${appr-used<0?'var(--bad)':'var(--ok)'}">${inr(appr-used)}</b></div><div><div class="eyebrow">Utilisation</div><b class="num">${appr?Math.round(used/appr*100):0}%</b></div></div>
-   <div class="tbl-wrap"><table><thead><tr><th>Event</th><th>Category</th><th>Approved</th><th>Used</th><th>Remaining</th></tr></thead><tbody>
-   ${keys.map(k=>S.annual.lines.filter(l=>l.ev===k).map((l,i)=>{const u=usedOf(l);return `<tr><td>${i?'':`<b>${esc(evLabel(k))}</b>`}</td><td>${esc(l.cat)}</td><td class="num">${inr(l.approved)}</td><td class="num">${inr(u)}</td><td class="num">${inr(l.approved-u)}</td></tr>`}).join('')).join('')}
-   <tr style="background:var(--sunk)"><td></td><td><b>Total</b></td><td class="num"><b>${inr(appr)}</b></td><td class="num"><b>${inr(used)}</b></td><td class="num"><b>${inr(appr-used)}</b></td></tr></tbody></table></div>
-   ${un.length?`<div><div class="eyebrow" style="padding-bottom:6px">Not yet assigned to a budget line</div>${un.map(x=>`<div class="task" style="grid-template-columns:1fr auto"><span>${esc(x.item)} <span class="faint">· ${esc((evById(x.ev)||{}).name||'')}</span></span><b class="num">${inr(x.amt)}</b></div>`).join('')}</div>`:''}
+   <div class="row between" style="align-items:flex-start"><div><div class="eyebrow">${esc(A.title)} · Utilisation</div><h2>Approved vs used · FY ${esc(A.fy)}</h2><div class="muted">Period ${esc(A.period)} · as on ${fmtY(TODAY)}</div></div>${logo(40)}</div>
+   <div class="row" style="gap:24px"><div><div class="eyebrow">Approved</div><b class="num">${inr(appr)}</b></div><div><div class="eyebrow">Proposed plan</div><b class="num">${inr(planned)}</b></div><div><div class="eyebrow">Used</div><b class="num">${inr(used)}</b></div><div><div class="eyebrow">Remaining</div><b class="num" style="color:${appr-used<0?'var(--bad)':'var(--ok)'}">${inr(appr-used)}</b></div><div><div class="eyebrow">Utilisation</div><b class="num">${appr?Math.round(used/appr*100):0}%</b></div></div>
+   <div class="tbl-wrap"><table><thead><tr><th>Vertical</th><th>Nature</th><th>Line item</th><th>Proposed FY27</th><th>Used</th><th>Remaining</th></tr></thead><tbody>
+   ${verts().map(v=>{const ls=A.lines.filter(l=>l.vertical===v);return ls.map((l,i)=>{const u=usedOf(l);return `<tr><td>${i?'':`<b>${esc(v)}</b>`}</td><td>${l.nature==='—'?'':esc(l.nature)}</td><td>${esc(l.item)}</td><td class="num">${inr(l.approved)}</td><td class="num">${inr(u)}</td><td class="num">${inr(l.approved-u)}</td></tr>`}).join('')+`<tr style="background:var(--sunk)"><td></td><td></td><td><b>Total</b></td><td class="num"><b>${inr(ls.reduce((s,l)=>s+l.approved,0))}</b></td><td class="num"><b>${inr(ls.reduce((s,l)=>s+usedOf(l),0))}</b></td><td></td></tr>`}).join('')}
+   <tr><td></td><td></td><td><b>Grand total</b></td><td class="num"><b>${inr(planned)}</b></td><td class="num"><b>${inr(used)}</b></td><td class="num"><b>${inr(planned-used)}</b></td></tr>
+   <tr style="background:var(--gold-soft)"><td></td><td></td><td><b>Approved (${esc(A.approvedOn)})</b></td><td class="num"><b>${inr(appr)}</b></td><td></td><td class="num"><b>${inr(appr-used)}</b></td></tr></tbody></table></div>
+   ${un.length?`<div><div class="eyebrow" style="padding-bottom:6px">Event expenses not charged to this budget</div>${un.map(x=>`<div class="task" style="grid-template-columns:1fr auto"><span>${esc(x.item)} <span class="faint">· ${esc((evById(x.ev)||{}).name||'')}</span></span><b class="num">${inr(x.amt)}</b></div>`).join('')}</div>`:''}
+   <div class="faint" style="font-size:.82rem">Submitted ${esc(A.submitted)}</div>
   </div>
-  <div class="note">${ic('info')}<div>Prototype preview. In the full app this downloads as Excel or PDF, in your report format if you have uploaded one.</div></div>
+  <div class="note">${ic('info')}<div>Prototype preview. In the full app this downloads as Excel or PDF.</div></div>
   <div class="row"><button class="btn pri" onclick="toast('Downloads work once the app is live. This preview blocks them')">Download Excel</button><button class="btn" onclick="toast('Downloads work once the app is live. This preview blocks them')">Download PDF</button></div>`,true)}
 function editHeads(ev){const h=S.heads[ev]||{};const list=Object.entries(h);
   modal(`<h2>Sanctioned amounts</h2><div id="hl" class="grid" style="gap:8px">${(list.length?list:[['Decor',0],['Printing',0],['Marketing',0]]).map(([k,v],i)=>`<div class="row"><input type="text" class="hk" value="${esc(k)}" style="flex:1"><input type="number" class="hv" value="${v}" style="width:140px"></div>`).join('')}</div>
