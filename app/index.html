@@ -1,0 +1,961 @@
+<title>Gennext Events</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Mukta+Vaani:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: quiet sidebar shell on laptop, bottom tab bar on phone; content in calm sheets with saffron used only for action and "now". */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --sunk:#EFEDE6; --line:#E2DFD5;
+  --ink:#24233A; --ink-2:#5D5B70; --ink-3:#8C8A9B;
+  --saffron:#D9791A; --saffron-soft:#FBEBD8; --gold:#A8812E; --gold-soft:#F3EAD3;
+  --indigo:#3B3A6B; --indigo-soft:#E6E5F2;
+  --ok:#2F7D57; --ok-soft:#DDF0E5; --warn:#B7791F; --warn-soft:#FBF0D9; --bad:#B4413A; --bad-soft:#F8E1DE;
+  --f-display:"Marcellus", "Cormorant Garamond", Georgia, serif;
+  --f-body:"Mukta Vaani", "Noto Sans Gujarati", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r:12px; --shadow:0 1px 2px rgba(36,35,58,.06), 0 6px 20px rgba(36,35,58,.05);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17161F; --surface:#201F2B; --sunk:#2A2937; --line:#363546;
+  --ink:#EEEDF4; --ink-2:#B7B5C6; --ink-3:#8A889B;
+  --saffron:#F0963C; --saffron-soft:#3D2A17; --gold:#D4B064; --gold-soft:#352D1B;
+  --indigo:#A9A7E8; --indigo-soft:#2C2B47;
+  --ok:#5CC08C; --ok-soft:#1C3328; --warn:#E3AE4F; --warn-soft:#382D16; --bad:#EE7D74; --bad-soft:#3A1F1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#17161F; --surface:#201F2B; --sunk:#2A2937; --line:#363546;
+  --ink:#EEEDF4; --ink-2:#B7B5C6; --ink-3:#8A889B;
+  --saffron:#F0963C; --saffron-soft:#3D2A17; --gold:#D4B064; --gold-soft:#352D1B;
+  --indigo:#A9A7E8; --indigo-soft:#2C2B47;
+  --ok:#5CC08C; --ok-soft:#1C3328; --warn:#E3AE4F; --warn-soft:#382D16; --bad:#EE7D74; --bad-soft:#3A1F1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:.01em}
+h1{font-size:1.9rem;line-height:1.15} h2{font-size:1.35rem} h3{font-size:1.08rem}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-2)} .faint{color:var(--ink-3)}
+.eyebrow{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+:focus-visible{outline:2px solid var(--saffron);outline-offset:2px}
+
+/* shell */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100%}
+.side{position:sticky;top:0;height:100vh;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px;gap:4px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px}
+.brand svg{flex:none}
+.brand b{font-family:var(--f-display);font-weight:400;font-size:1.25rem;display:block;line-height:1.1}
+.brand small{color:var(--ink-3);font-size:.75rem}
+.nav-label{padding:14px 10px 4px}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;color:var(--ink-2);text-decoration:none;cursor:pointer;font-weight:500}
+.nav a:hover{background:var(--sunk);color:var(--ink)}
+.nav a.on{background:var(--saffron-soft);color:var(--ink)}
+.nav a.on svg{color:var(--saffron)}
+.nav svg{width:18px;height:18px;flex:none}
+.side-foot{margin-top:auto;padding:12px 8px 0;border-top:1px solid var(--line);display:grid;gap:10px}
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding-block:10px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.topbar .crumb{font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar .sp{flex:1}
+.content{padding-block:24px 110px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));max-width:1240px;width:100%;display:grid;gap:22px}
+.seg{display:inline-flex;background:var(--sunk);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:4px 11px;border-radius:999px;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--ink-2)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.tabbar{display:none}
+
+/* primitives */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:9px;cursor:pointer;font-weight:600;font-size:.9rem;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.pri{background:var(--saffron);border-color:var(--saffron);color:#fff}
+.btn.pri:hover{filter:brightness(1.06)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.sm{padding:4px 10px;font-size:.8rem}
+.btn svg{width:16px;height:16px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:.76rem;font-weight:600;white-space:nowrap;background:var(--sunk);color:var(--ink-2)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.sf{background:var(--saffron-soft);color:var(--saffron)} .pill.in{background:var(--indigo-soft);color:var(--indigo)} .pill.gd{background:var(--gold-soft);color:var(--gold)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.field{display:grid;gap:4px} .field label{font-size:.8rem;font-weight:600;color:var(--ink-2)}
+input[type=text],input[type=date],input[type=number],input[type=search],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:80px}
+.bar{height:6px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--saffron);border-radius:99px}
+.bar.ok>i{background:var(--ok)} .bar.bad>i{background:var(--bad)} .bar.gd>i{background:var(--gold)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);text-align:left;font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--sunk)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td input[type=date],td select{padding:3px 6px;font-size:.84rem;width:auto}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;padding:9px 12px;cursor:pointer;font-weight:600;color:var(--ink-2);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--ink);border-color:var(--saffron)}
+.empty{padding:28px;text-align:center;color:var(--ink-3)}
+.note{background:var(--indigo-soft);color:var(--ink);border-radius:10px;padding:10px 14px;font-size:.86rem;display:flex;gap:8px;align-items:flex-start}
+.note svg{flex:none;color:var(--indigo);width:18px;height:18px;margin-top:2px}
+
+/* home */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.next{position:relative;overflow:hidden;background:var(--indigo);color:#fff;border-radius:16px;padding:24px;display:grid;gap:14px;min-height:210px}
+.next .eyebrow{color:rgba(255,255,255,.7)}
+.next h2{font-size:1.8rem}
+.next .big{font-family:var(--f-display);font-size:3.2rem;line-height:1}
+.next .bar{background:rgba(255,255,255,.18)} .next .bar>i{background:var(--gold)}
+.next svg.mandala{position:absolute;right:-60px;top:-60px;width:260px;height:260px;opacity:.13;color:#fff}
+:root[data-theme="dark"] .next{background:#2E2D55} @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .next{background:#2E2D55}}
+.evcard{display:grid;gap:10px;cursor:pointer;transition:border-color .15s}
+.evcard:hover{border-color:var(--saffron)}
+.evtag{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:var(--f-display);font-size:1rem;flex:none}
+.task{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:0}
+.chk{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink-3);background:none;cursor:pointer;display:grid;place-items:center;padding:0}
+.chk.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.chk svg{width:13px;height:13px}
+.minis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mini{aspect-ratio:1;border-radius:10px;max-width:100%;position:relative;overflow:hidden}
+
+/* moments */
+.wall{columns:4 220px;column-gap:14px}
+.moment{break-inside:avoid;margin-bottom:14px;border-radius:14px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+.moment .ph{position:relative;display:block;width:100%}
+.moment img{display:block;width:100%}
+.moment .cap{padding:10px 12px}
+.art{position:relative;overflow:hidden;width:100%}
+.art span{position:absolute;inset:auto 10px 8px 10px;color:#fff;font-family:var(--f-display);font-size:1rem;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+
+/* board / calendar */
+.board{display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--sunk);border-radius:var(--r);padding:10px;display:grid;gap:8px;align-content:start;min-height:120px}
+.kc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:6px;font-size:.88rem}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--line);gap:1px}
+.cal .dh{background:var(--sunk);padding:6px 8px;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+.cal .d{background:var(--surface);min-height:104px;padding:6px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cal .d.out{background:var(--bg)} .cal .d.out .n{color:var(--ink-3)}
+.cal .d.today .n{background:var(--saffron);color:#fff;border-radius:99px;padding:0 7px}
+.cal .n{font-size:.8rem;font-weight:600;align-self:flex-start}
+.cal .it{font-size:.72rem;padding:1px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal .it.ev{background:var(--indigo);color:#fff}
+.cal .it.tk{background:var(--saffron-soft);color:var(--ink)}
+.cal .it.tk.done{background:var(--sunk);color:var(--ink-3);text-decoration:line-through}
+
+/* library */
+.folder{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer}
+.folder:hover{border-color:var(--gold)}
+.folder svg{color:var(--gold);width:28px;height:28px;flex:none}
+.file{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.file .art{aspect-ratio:4/3}
+.file .meta{padding:8px 10px;font-size:.84rem;display:grid;gap:4px}
+
+/* checker */
+.drop{border:2px dashed var(--line);border-radius:14px;padding:24px;text-align:center;cursor:pointer;display:grid;gap:8px;place-items:center;background:var(--surface)}
+.drop:hover{border-color:var(--saffron)}
+.drop img{max-height:280px;border-radius:8px}
+.res{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.res:last-child{border-bottom:0}
+.ri{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.8rem}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(20,19,30,.45);z-index:50;display:grid;place-items:center;padding:16px}
+.modal{background:var(--surface);border-radius:16px;width:min(640px,100%);max-height:90vh;overflow:auto;padding:22px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal.wide{width:min(860px,100%)}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:99px;z-index:60;font-weight:600;font-size:.88rem}
+
+/* public submit */
+.public{max-width:560px;margin:0 auto;padding-block:40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+
+.report{border:1px solid var(--line);border-radius:10px;padding:22px;display:grid;gap:14px;background:var(--surface)}
+.report table td,.report table th{padding:6px 8px}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{display:none}
+  .hero{grid-template-columns:1fr}
+  .topbar,.content{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .tabbar a{flex:1;display:grid;justify-items:center;gap:2px;font-size:.7rem;color:var(--ink-3);text-decoration:none;cursor:pointer;font-weight:600}
+  .tabbar a svg{width:22px;height:22px}
+  .tabbar a.on{color:var(--saffron)}
+  h1{font-size:1.55rem}
+  .next .big{font-size:2.6rem}
+  .topbar .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div id="root"></div>
+
+<script>
+/* ---------- icons ---------- */
+const I={
+home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+events:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 15l2 2 4-4"/>',
+cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+money:'<rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="3"/><path d="M6 10v.01M18 15v.01"/>',
+budget:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+idea:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+moment:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+lib:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+guide:'<path d="M4 4h11l5 5v11H4z"/><path d="M15 4v5h5M8 13h8M8 17h5"/>',
+tpl:'<path d="M4 6h16M4 12h10M4 18h7"/><circle cx="18" cy="16" r="3"/>',
+more:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+plus:'<path d="M12 5v14M5 12h14"/>',
+check:'<path d="M5 12l5 5 9-10"/>',
+info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
+up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
+link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+back:'<path d="M15 6l-6 6 6 6"/>',
+x:'<path d="M6 6l12 12M18 6L6 18"/>',
+file:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>',
+};
+const ic=(n,s='')=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ${s}>${I[n]}</svg>`;
+const MANDALA='<svg class="mandala" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.2">'+Array.from({length:12},(_,i)=>`<ellipse cx="100" cy="55" rx="16" ry="45" transform="rotate(${i*30} 100 100)"/>`).join('')+'<circle cx="100" cy="100" r="22"/><circle cx="100" cy="100" r="92"/></svg>';
+
+/* ---------- helpers ---------- */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return iso(d)};
+const diff=(a,b)=>Math.round((parse(a)-parse(b))/864e5);
+const TODAY=iso(new Date());
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmt=s=>{if(!s)return '—';const d=parse(s);return `${d.getDate()} ${MON[d.getMonth()]}`};
+const fmtY=s=>{if(!s)return '—';const d=parse(s);return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`};
+const inr=n=>'₹'+Math.round(n||0).toLocaleString('en-IN');
+const uid=()=>Math.random().toString(36).slice(2,9);
+const dLabel=o=>o===0?'D-day':o<0?`D${o}`:`D+${o}`;
+
+/* ---------- reference data ---------- */
+const TEAM=['Shweta','Saransh','Anjal','Natasha','Shriya','Devanshi','Shraddha','Chirag','Achira','Param'];
+const DEPTS=['Marketing - Social','Marketing - Information','Design','Printables','Operations','Procurement','Programming','Leadership Update'];
+const STATUSES=['To start','WIP','Live','Closed'];
+const STCLS={'To start':'','WIP':'warn','Live':'in','Closed':'ok'};
+const TYPES={
+ smilescapes:{label:'Smilescapes',short:'SS',color:'#3E8EC9',where:'Mumbai & beyond',runway:15},
+ prem:{label:'Prem Mahotsav',short:'PM',color:'#C2564B',where:'RC, Khopoli',runway:90},
+ anand:{label:'Anand Mahotsav',short:'AM',color:'#D9791A',where:'RC, Khopoli',runway:90},
+ sarvarpan:{label:'Sarvarpan Divas',short:'SD',color:'#7A6BB0',where:'RC, Khopoli',runway:90},
+ guru:{label:'Guru Purnima',short:'GP',color:'#A8812E',where:'RC, Khopoli',runway:90},
+ paryushan:{label:'Paryushan',short:'PY',color:'#2F7D57',where:'RC, Khopoli',runway:90},
+ rpl:{label:'RPL',short:'RPL',color:'#2C6E8F',where:'RC, Khopoli',runway:45},
+};
+/* row: [title, dept, collateral, ext/int, lead1, lead2, offset] */
+const SS_ROWS=[
+ ['References for reels and stories','Marketing - Social','Reels + Story','External','Saransh','Anjal',-13],
+ ['Registration open','Marketing - Social','Reel','External','Saransh','Anjal',-13],
+ ['Location recce','Operations','Google pin + pictures','Internal','Shweta','Shriya',-11],
+ ['People experience – video montage','Marketing - Social','Reel','External','Saransh','Devanshi',-11],
+ ['Participant list for Pujya Nileshbhai','Leadership Update','Excel / PDF','Internal','Shweta','Anjal',-10],
+ ['Event experience – Smilescapes is calling','Marketing - Social','Reel','External','Saransh','Shraddha',-10],
+ ['Event information – Agenda','Marketing - Social','Static','External','Saransh','Shraddha',-9],
+ ['Ice-breaker game','Programming','Activity','Internal','Shweta','Natasha',-8],
+ ['Props – quotes & booking','Procurement','Props','Internal','Shweta','Shriya',-8],
+ ['What to wear / carry','Marketing - Social','Static','External','Saransh','Shraddha',-8],
+ ['Vibe match – meme-led carousel','Marketing - Social','Carousel','External','Saransh','Shraddha',-7],
+ ['Main activity design','Programming','Activity','External','Shweta','Natasha',-7],
+ ['Passers-by info cards','Printables','Prints','External','Saransh','Shriya',-6],
+ ['Police permission','Operations','Phone numbers','Internal','Shweta','Shriya',-6],
+ ['Event-day checklist','Operations','Print','Internal','Shweta','Natasha',-6],
+ ['Registration closed','Marketing - Social','Reel','External','Saransh','Anjal',-5],
+ ['Finalise food venue','Programming','Negotiate','External','Shweta','Anjal',-4],
+ ['Collect money for confirmation','Operations','Excel','External','Shweta','Anjal',-4],
+ ['Briefing our Mumukshus & team division','Operations','Meeting','Internal','Saransh','Shweta',-4],
+ ['Location share','Marketing - Information','Static + link','External','Saransh','Anjal',-2],
+ ['Snacks for the team','Procurement','—','Internal','Shweta','Shriya',-2],
+ ['See you tomorrow','Marketing - Social','Reel','External','Saransh','Chirag',-1],
+ ['Live posting on stories','Marketing - Social','Reels + Story','External','Saransh','Anjal',0],
+ ['Shoot content','Marketing - Social','Videos + photos','Internal','Saransh','Natasha',0],
+ ['Refund money at the venue','Operations','Cash','External','Shweta','Anjal',0],
+ ['Report for Pujya Nileshbhai','Leadership Update','PDF','Internal','Saransh','Anjal',1],
+ ['Feedback form','Marketing - Information','Link','External','Saransh','Anjal',1],
+ ['Thank you message','Marketing - Social','Static','External','Saransh','',1],
+ ['Video for Pujya Nileshbhai','Leadership Update','Reel','Internal','Saransh','Natasha',2],
+ ['Introduce next event','Marketing - Social','Static','External','Saransh','',3],
+ ['Bills & expense summary','Operations','PDF','Internal','Shweta','',5],
+];
+const RC_ROWS=[
+ ['Theme & concept lock','Programming','Deck','Internal','Shweta','Saransh',-90],
+ ['Budget sanction request','Leadership Update','Excel','Internal','Shweta','',-85],
+ ['Key visual – design start','Design','Key visual','Internal','Saransh','Devanshi',-80],
+ ['Vendor quotes – decor, sound, printing','Procurement','Quotations','Internal','Shweta','Shriya',-75],
+ ['Save the date – design','Design','Static + Reel','External','Saransh','Devanshi',-70],
+ ['Save the date – release','Marketing - Social','Static + Reel','External','Saransh','Anjal',-60],
+ ['Programme flow draft','Programming','Doc','Internal','Shweta','Natasha',-55],
+ ['Dance & skit ideas shortlisted','Programming','Idea Bank','Internal','Shweta','Natasha',-50],
+ ['Promotion 1 – theme reveal','Marketing - Social','Reel','External','Saransh','Shraddha',-45],
+ ['Registration open','Marketing - Information','Link + Static','External','Saransh','Anjal',-40],
+ ['Printables – design start','Printables','Banners, standees, badges','Internal','Saransh','Devanshi',-35],
+ ['Promotion 2 – experience teaser','Marketing - Social','Reel','External','Saransh','Chirag',-30],
+ ['Rehearsals begin','Programming','—','Internal','Natasha','Shweta',-28],
+ ['Printables – final files to vendor','Printables','Print files','Internal','Saransh','Shriya',-20],
+ ['Props & things to buy','Procurement','Props','Internal','Shweta','Shriya',-15],
+ ['Promotion 3 – what to expect','Marketing - Social','Carousel','External','Saransh','Shraddha',-14],
+ ['Printables – delivery at RC','Printables','—','Internal','Shriya','',-10],
+ ['Things to carry – packing list','Operations','Checklist','Internal','Shweta','Natasha',-7],
+ ['Countdown reels','Marketing - Social','Reels','External','Saransh','Anjal',-5],
+ ['Volunteer briefing & D-day roles','Operations','Meeting','Internal','Shweta','Saransh',-3],
+ ['Setup at venue','Operations','—','Internal','Shweta','Shriya',-1],
+ ['Live coverage','Marketing - Social','Reels + Story','External','Saransh','Anjal',0],
+ ['Thank you post','Marketing - Social','Static','External','Saransh','',2],
+ ['Report & highlights for leadership','Leadership Update','PDF + Reel','Internal','Saransh','Anjal',4],
+ ['Bills collected & expense report','Operations','PDF','Internal','Shweta','',10],
+];
+const RPL_ROWS=[
+ ['Format, teams & schedule','Programming','Doc','Internal','Shweta','Saransh',-45],
+ ['Budget sanction request','Leadership Update','Excel','Internal','Shweta','',-42],
+ ['Team registrations open','Marketing - Information','Link','External','Saransh','Anjal',-35],
+ ['Save the date','Marketing - Social','Static','External','Saransh','Devanshi',-30],
+ ['Jerseys & kit – quotes','Procurement','Quotations','Internal','Shweta','Param',-28],
+ ['Team reveal reels','Marketing - Social','Reels','External','Saransh','Chirag',-20],
+ ['Ground, umpires & scoreboard','Operations','—','Internal','Param','Shweta',-14],
+ ['Trophies & medals','Procurement','Props','Internal','Shweta','Param',-10],
+ ['Fixture poster','Design','Static','External','Saransh','Devanshi',-7],
+ ['Things to carry – first aid, water, kit','Operations','Checklist','Internal','Shweta','Shriya',-2],
+ ['Live scores & stories','Marketing - Social','Story','External','Saransh','Anjal',0],
+ ['Winners post','Marketing - Social','Static','External','Saransh','',1],
+ ['Bills & expense summary','Operations','PDF','Internal','Shweta','',5],
+];
+
+/* ---------- state ---------- */
+const KEY='gennext-events-v1';
+let S;
+function seed(){
+  const tpl={};
+  tpl.smilescapes=SS_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
+  for(const k of ['prem','anand','sarvarpan','guru','paryushan']) tpl[k]=RC_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
+  tpl.rpl=RPL_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
+  const events=[
+   {id:'e1',type:'smilescapes',name:'Smilescapes · Cycling by the Sea',date:'2026-10-10',venue:'Marine Drive → Breach Candy, Mumbai'},
+   {id:'e2',type:'smilescapes',name:'Smilescapes · 31 Oct',date:'2026-10-31',venue:'To be finalised, Mumbai'},
+   {id:'e3',type:'prem',name:'Prem Mahotsav 2026',date:'2026-12-18',venue:'RC, Khopoli'},
+   {id:'e4',type:'rpl',name:'RPL 2027',date:'2027-01-23',venue:'RC grounds, Khopoli'},
+   {id:'e5',type:'anand',name:'Anand Mahotsav 2027',date:'2027-02-17',venue:'RC, Khopoli'},
+   {id:'e6',type:'sarvarpan',name:'Sarvarpan Divas 2027',date:'2027-05-30',venue:'RC, Khopoli'},
+   {id:'e7',type:'guru',name:'Guru Purnima 2027',date:'2027-07-18',venue:'RC, Khopoli'},
+   {id:'e8',type:'paryushan',name:'Paryushan 2027',date:'2027-08-29',venue:'RC, Khopoli'},
+  ];
+  S={role:'admin',lang:'en',view:'home',ev:null,tpl,events,tasks:[],
+    roles:{e1:[['Saransh','Host'],['Anjal','Shoot content'],['Natasha','Shoot content'],['Shweta','Base station'],['Devanshi','Treasure hunt – statue'],['Param','Smiley balloon – North'],['Shriya','Smiley balloon – South']],
+           e2:[['Saransh','Host'],['Shweta','Base station'],['Anjal','Shoot content']]},
+    flow:{e1:[['07:00','Arrive, cycles lined up'],['07:15','Ice breaker – wind, sea, sun, rain'],['07:35','Make teams'],['07:45','Cycling treasure hunt'],['08:45','Pause by the sea – no phones'],['09:00','Reflection'],['09:15','Wrap up'],['09:30','Breakfast at Drift']]},
+    guidance:[
+      {id:uid(),scope:'Smilescapes',by:'Pujya Nileshbhai',text:'No gifts. It should not look like a marketing activity. No one should feel we are trying to convert them.'},
+      {id:uid(),scope:'Smilescapes',by:'Pujya Nileshbhai',text:'Objective: people should enjoy. They should fall in love with us.'},
+      {id:uid(),scope:'Smilescapes',by:'Pujya Nileshbhai',text:'Keep a few people on the sides to answer queries from passers-by.'},
+      {id:uid(),scope:'Smilescapes',by:'Pujya Nileshbhai',text:'Do communication activities in a circle so the speaker can make eye contact with everyone.'},
+      {id:uid(),scope:'Smilescapes',by:'Pujya Nileshbhai',text:'Return people’s money immediately, in cash, as they are leaving.'},
+      {id:uid(),scope:'Smilescapes',by:'Achira',text:'No T-shirts. Concentrate on the PS outfit.'},
+    ],
+    scripts:{e1:[{id:uid(),title:'Reel for Pujya Nileshbhai',by:'Natasha & Chirag',lines:[
+      ['What happens when 40 people swap their usual Saturday morning for a little adventure by the sea?','Sunrise, empty promenade, cycles being lined up'],
+      ['Well… this!','Quick montage of cycles, participants, treasure hunt and laughter'],
+      ['But before we got moving, we did something unusual.','Only text on PS blue background'],
+      ['We paused. No phones. No rushing. Just us, the sea, and a moment to ourselves.','Footage of the pause, participants looking at the sea'],
+      ['A treasure hunt. On cycles.','Music picks up – teams cycling, solving clues'],
+      ['Turns out, the best part of the ride wasn’t where we went. It was who we rode with.','Happy group shot, Smilescapes branding'],
+      ['Smilescapes by Project Smilestones.','Logo on blank screen, tagline below']]}]},
+    vendors:[
+      {id:'v1',name:'Ride On Cycles',cat:'Cycle rentals',contact:'Imran · 98200 41122',city:'Mumbai',gst:'27AAJFR1234K1Z2',rating:4},
+      {id:'v2',name:'Drift Café',cat:'Food & beverage',contact:'Manager · 98330 77810',city:'Mumbai',gst:'27AADCD5521M1Z9',rating:5},
+      {id:'v3',name:'PrintPoint Andheri',cat:'Printing',contact:'Rakesh · 98192 30044',city:'Mumbai',gst:'27ABCPP9087L1Z1',rating:4},
+      {id:'v4',name:'Shree Ganesh Decorators',cat:'Decor',contact:'Sunil · 99200 18877',city:'Khopoli',gst:'27AEPPG7782F1Z4',rating:4},
+      {id:'v5',name:'Sai Sound & Lights',cat:'Sound & light',contact:'Prakash · 97690 55120',city:'Panvel',gst:'27AAMFS2201C1Z7',rating:3},
+      {id:'v6',name:'Balloon Bazaar',cat:'Props',contact:'Neha · 90040 66231',city:'Mumbai',gst:'—',rating:4},
+    ],
+    quotes:[
+      {id:uid(),ev:'e3',vendor:'v4',item:'Stage & hall decor (3 days)',amt:340000,status:'Selected'},
+      {id:uid(),ev:'e3',vendor:'v5',item:'Sound & light (3 days)',amt:145000,status:'Selected'},
+      {id:uid(),ev:'e3',vendor:'v3',item:'Banners, standees, badges',amt:72000,status:'Under review'},
+      {id:uid(),ev:'e1',vendor:'v1',item:'40 cycles, 3 hours',amt:13500,status:'Selected'},
+    ],
+    heads:{
+      e1:{'Programming':15000,'Food':25000,'Props':6000,'Printing':2000,'Team':1500},
+      e2:{'Programming':15000,'Food':25000,'Props':5000,'Printing':2000,'Team':1500},
+      e3:{'Decor':350000,'Sound & light':150000,'Printing':80000,'Marketing':60000,'Props':40000,'Team':30000},
+    },
+    expenses:[
+      {id:uid(),ev:'e1',item:'Cycle rentals – 40 cycles',head:'Programming',vendor:'v1',quote:13500,amt:12000,by:'Shweta',bill:true,file:'ride-on-invoice.pdf',date:'2026-10-10'},
+      {id:uid(),ev:'e1',item:'Breakfast – private room',head:'Food',vendor:'v2',quote:24000,amt:22400,by:'Anjal',bill:true,file:'drift-bill.jpg',date:'2026-10-10'},
+      {id:uid(),ev:'e1',item:'Smiley balloons',head:'Props',vendor:'v6',quote:2000,amt:1800,by:'Shriya',bill:false,file:'',date:'2026-10-09'},
+      {id:uid(),ev:'e1',item:'Water – 1 crate (48)',head:'Team',vendor:'',quote:0,amt:288,by:'Shriya',bill:true,file:'water.jpg',date:'2026-10-09'},
+      {id:uid(),ev:'e1',item:'Passers-by info cards',head:'Printing',vendor:'v3',quote:1000,amt:950,by:'Saransh',bill:true,file:'printpoint.pdf',date:'2026-10-06'},
+      {id:uid(),ev:'e1',item:'Winners hamper',head:'Programming',vendor:'',quote:3500,amt:3200,by:'Natasha',bill:false,file:'',date:'2026-10-08'},
+      {id:uid(),ev:'e3',item:'Decor advance (30%)',head:'Decor',vendor:'v4',quote:340000,amt:102000,by:'Shweta',bill:true,file:'decor-advance.pdf',date:'2026-10-05'},
+      {id:uid(),ev:'e3',item:'Save the date – boosted posts',head:'Marketing',vendor:'',quote:8000,amt:6500,by:'Saransh',bill:true,file:'meta-receipt.pdf',date:'2026-10-12'},
+    ],
+    tags:['Dance','Skit','Opening ceremony','Activation','Engagement','Filler / booth','Smilescapes activity','Décor'],
+    ideas:[
+      {id:uid(),title:'Lantern walk to the main hall',desc:'Every attendee carries a small diya lantern from the gate to the hall at dusk; volunteers line the path humming bhakti.',tags:['Opening ceremony'],status:'Shortlisted',by:'Natasha',ref:'',comments:[{by:'Shweta',t:'Could work for Prem Mahotsav evening 1.'}],used:''},
+      {id:uid(),title:'Silent disco seva sorting',desc:'Teams sort donation kits wearing headphones playing the same bhajan. Fun, calm, and useful.',tags:['Activation','Smilescapes activity'],status:'New',by:'Public submission',ref:'',comments:[],used:''},
+      {id:uid(),title:'Shadow-play skit on forgiveness',desc:'Backlit screen, 6 actors, story told only through silhouettes and narration. Fits Paryushan Kshamapana.',tags:['Skit'],status:'Shortlisted',by:'Devanshi',ref:'https://www.youtube.com/',comments:[],used:''},
+      {id:uid(),title:'Human alphabet treasure clue',desc:'Teams form letters with their bodies to spell the next clue location.',tags:['Smilescapes activity','Engagement'],status:'Used',by:'Shweta',ref:'',comments:[],used:'Smilescapes · Cycling by the Sea'},
+      {id:uid(),title:'Garba fusion with kids',desc:'Kids lead the first round, adults join. Eight-minute piece, easy steps.',tags:['Dance'],status:'New',by:'Shraddha',ref:'',comments:[],used:''},
+      {id:uid(),title:'Gratitude wall booth',desc:'Between sessions: write one line of gratitude on a leaf, hang it on a tree installation.',tags:['Filler / booth','Décor'],status:'New',by:'Public submission',ref:'',comments:[],used:''},
+    ],
+    moments:[
+      {id:uid(),cap:'Cycles lined up at sunrise',ev:'Smilescapes · Cycling by the Sea',by:'Anjal',hue:200,h:1.25,ok:true},
+      {id:uid(),cap:'The pause by the sea',ev:'Smilescapes · Cycling by the Sea',by:'Natasha',hue:215,h:.8,ok:true},
+      {id:uid(),cap:'Prem Mahotsav lamps, night 2',ev:'Prem Mahotsav 2025',by:'Saransh',hue:28,h:1.4,ok:true},
+      {id:uid(),cap:'RPL final – last over',ev:'RPL 2026',by:'Param',hue:140,h:.9,ok:true},
+      {id:uid(),cap:'Anand Mahotsav rangoli team',ev:'Anand Mahotsav 2026',by:'Shriya',hue:330,h:1.1,ok:true},
+      {id:uid(),cap:'Breakfast stories',ev:'Smilescapes · Cycling by the Sea',by:'Devanshi',hue:40,h:1,ok:true},
+      {id:uid(),cap:'Guru Purnima flowers',ev:'Guru Purnima 2026',by:'Shraddha',hue:48,h:1.3,ok:true},
+      {id:uid(),cap:'Treasure hunt – human alphabet',ev:'Smilescapes · Cycling by the Sea',by:'Chirag',hue:185,h:.85,ok:false},
+    ],
+    rules:[
+      {id:uid(),cat:'Logo',text:'RC logo sits top-left or top-centre with clear space equal to the height of the logo mark. Never stretch, recolour or add effects.'},
+      {id:uid(),cat:'Logo',text:'Smilescapes creatives use the "Smilescapes by Project Smilestones" lockup.'},
+      {id:uid(),cat:'Colour',text:'Use the event palette from the key visual. Text on Smilescapes creatives sits on PS blue.'},
+      {id:uid(),cat:'Typography',text:'Maximum two typefaces per creative. Headline at least 2× body size.'},
+      {id:uid(),cat:'Mandatory info',text:'Every external creative shows event name, date, venue and the registration link or QR.'},
+      {id:uid(),cat:'Imagery',text:'Use only approved photographs from the Library. No stock photos of people.'},
+      {id:uid(),cat:'Tone',text:'Smilescapes should not look like a marketing activity: warm, inviting, no hard sell.'},
+      {id:uid(),cat:'Language',text:'Spell-check English and Gujarati text. Use "Shrimad Rajchandra Aatma Tatva Research Centre" in full on print.'},
+    ],
+    library:{
+      'Prem Mahotsav':{'2025':[['Key visual','Creative',28],['Save the date','Creative',20],['Day 1 – opening','Photo',38],['Lamps night 2','Photo',30],['Hall decor','Photo',12]],'2024':[['Key visual','Creative',18],['Highlights','Photo',34]]},
+      'Anand Mahotsav':{'2026':[['Key visual','Creative',32],['Rangoli','Photo',330],['Stage','Photo',300]]},
+      'Guru Purnima':{'2026':[['Invite','Creative',45],['Flowers','Photo',50]]},
+      'Paryushan':{'2026':[['Daily schedule','Creative',150],['Kshamapana','Photo',160]]},
+      'Sarvarpan Divas':{'2026':[['Key visual','Creative',265]]},
+      'RPL':{'2026':[['Fixture poster','Creative',120],['Final','Photo',140]]},
+      'Smilescapes':{'2026':[['Registration open','Creative',205],['Cycling by the Sea','Photo',200],['Pause','Photo',215]]},
+      'Logos':{'All':[['RC logo – colour','Logo',30],['RC logo – white','Logo',240],['Project Smilestones','Logo',205],['Smilescapes lockup','Logo',195]]},
+    },
+  };
+  for(const e of events) genTasks(e);
+  // seed statuses
+  let k=0;
+  for(const t of S.tasks){k++;
+    const d=diff(t.due,TODAY);
+    if(t.ev==='e1') t.st='Closed';
+    else if(d<-3) t.st=k%7===0?'WIP':'Closed';
+    else if(d<0) t.st=k%3===0?'Closed':'WIP';
+    else if(d<6) t.st=k%2?'WIP':'To start';
+    else t.st='To start';
+    if(t.st==='Closed'&&/Marketing - Social/.test(t.dept)) t.st=k%2?'Live':'Closed';
+  }
+}
+function genTasks(e){
+  for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:''});
+}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);return}}catch(e){} seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ---------- i18n (labels) ---------- */
+const GU={'Home':'હોમ','Events':'કાર્યક્રમો','Calendar':'કેલેન્ડર','Expenses & vendors':'ખર્ચ અને વિક્રેતાઓ','Budget':'બજેટ','Idea Bank':'આઇડિયા બેંક','Our Moments':'અમારી ક્ષણો','Library':'લાઇબ્રેરી','Creative guidelines':'ક્રિએટિવ માર્ગદર્શિકા','Templates':'ટેમ્પ્લેટ્સ','Plan':'આયોજન','Money':'નાણાં','Create':'સર્જન','Setup':'સેટઅપ','More':'વધુ','Ideas':'આઇડિયા',
+ 'Upcoming events':'આગામી કાર્યક્રમો','My tasks':'મારાં કાર્યો','Overdue':'બાકી','Due this week':'આ અઠવાડિયે','days to go':'દિવસ બાકી','New event':'નવો કાર્યક્રમ','Latest moments':'તાજી ક્ષણો','Fresh ideas':'નવા આઇડિયા','Jai Jinendra':'જય જિનેન્દ્ર'};
+const t=s=>S.lang==='gu'&&GU[s]?GU[s]:s;
+
+/* ---------- nav ---------- */
+const NAV=[
+ {g:'Plan',items:[['home','Home','home'],['events','Events','events'],['calendar','Calendar','cal']]},
+ {g:'Money',admin:false,items:[['expenses','Expenses & vendors','money'],['budget','Budget','budget',true]]},
+ {g:'Create',items:[['ideas','Idea Bank','idea'],['moments','Our Moments','moment'],['library','Library','lib'],['guidelines','Creative guidelines','guide']]},
+ {g:'Setup',items:[['templates','Templates','tpl',true]]},
+];
+const isAdmin=()=>S.role==='admin';
+function go(v,ev){S.view=v;S.ev=ev||null;save();render();window.scrollTo(0,0)}
+
+/* ---------- shell ---------- */
+function shell(body,crumb){
+  const nav=NAV.map(g=>{const items=g.items.filter(i=>!i[3]||isAdmin());if(!items.length)return '';
+    return `<div class="eyebrow nav-label">${t(g.g)}</div>`+items.map(i=>`<a class="${S.view===i[0]||(S.view==='event'&&i[0]==='events')?'on':''}" onclick="go('${i[0]}')">${ic(i[2])}<span>${t(i[1])}</span></a>`).join('')}).join('');
+  const tabs=[['home','Home','home'],['events','Events','events'],['calendar','Calendar','cal'],['ideas','Ideas','idea'],['more','More','more']];
+  const moreOn=!['home','events','event','calendar','ideas'].includes(S.view);
+  return `<div class="app">
+  <aside class="side">
+    <div class="brand">${logo(34)}<div><b>Gennext Events</b><small>Events team · RC Khopoli</small></div></div>
+    <nav class="nav">${nav}</nav>
+    <div class="side-foot">
+      ${roleSeg()}
+      <div class="row between"><span class="faint" style="font-size:.8rem">Language</span>${langSeg()}</div>
+      <button class="btn ghost sm" onclick="resetDemo()">Reset sample data</button>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">${crumb||''}</div><div class="sp"></div>
+      <span class="hide-sm">${langSeg()}</span>
+      ${roleSeg()}
+    </header>
+    <main class="content">${body}</main>
+  </div>
+  <nav class="tabbar">${tabs.map(x=>`<a class="${(S.view===x[0]||(x[0]==='events'&&S.view==='event')||(x[0]==='more'&&moreOn))?'on':''}" onclick="${x[0]==='more'?'openMore()':`go('${x[0]}')`}">${ic(x[2])}<span>${t(x[1])}</span></a>`).join('')}</nav>
+  </div>`;
+}
+const logo=s=>`<svg width="${s}" height="${s}" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--saffron)"/><g fill="none" stroke="#fff" stroke-width="1.6">${Array.from({length:8},(_,i)=>`<ellipse cx="20" cy="12" rx="4" ry="8" transform="rotate(${i*45} 20 20)"/>`).join('')}</g><circle cx="20" cy="20" r="3.4" fill="#fff"/></svg>`;
+const roleSeg=()=>`<div class="seg" title="Preview as"><button class="${isAdmin()?'on':''}" onclick="setRole('admin')">Admin</button><button class="${!isAdmin()?'on':''}" onclick="setRole('member')">Member</button></div>`;
+const langSeg=()=>`<div class="seg"><button class="${S.lang==='en'?'on':''}" onclick="setLang('en')">EN</button><button class="${S.lang==='gu'?'on':''}" onclick="setLang('gu')">ગુ</button></div>`;
+function setRole(r){S.role=r;if(r!=='admin'&&['budget','templates'].includes(S.view))S.view='home';save();render();toast(r==='admin'?'Viewing as Admin':'Viewing as Member (Anjal)')}
+function setLang(l){S.lang=l;save();render()}
+function openMore(){
+  const items=NAV.flatMap(g=>g.items).filter(i=>!['home','events','calendar','ideas'].includes(i[0])&&(!i[3]||isAdmin()));
+  modal(`<div class="row between"><h2>${t('More')}</h2><button class="btn ghost" onclick="closeModal()">${ic('x')}</button></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">${items.map(i=>`<button class="folder" onclick="closeModal();go('${i[0]}')">${ic(i[2])}<b>${t(i[1])}</b></button>`).join('')}</div>
+  <div class="row between"><span class="muted">Language</span>${langSeg()}</div>
+  <button class="btn ghost sm" onclick="resetDemo()">Reset sample data</button>`);
+}
+
+/* ---------- computed ---------- */
+const evById=id=>S.events.find(e=>e.id===id);
+const tasksOf=id=>S.tasks.filter(x=>x.ev===id).sort((a,b)=>a.due<b.due?-1:a.due>b.due?1:0);
+const done=x=>x.st==='Closed'||x.st==='Live';
+const progress=id=>{const ts=tasksOf(id);return ts.length?Math.round(ts.filter(done).length/ts.length*100):0};
+const ME=()=>isAdmin()?'Shweta':'Anjal';
+const upcoming=()=>S.events.filter(e=>e.date>=TODAY).sort((a,b)=>a.date<b.date?-1:1);
+const evTag=(e,size=38)=>`<div class="evtag" style="width:${size}px;height:${size}px;background:${TYPES[e.type].color}22;color:${TYPES[e.type].color}">${TYPES[e.type].short}</div>`;
+const art=(hue,label,ratio)=>`<div class="art" style="aspect-ratio:${ratio||'4/3'};background:radial-gradient(circle at 30% 25%,hsl(${hue} 70% 78%),transparent 60%),linear-gradient(150deg,hsl(${hue} 55% 55%),hsl(${(hue+40)%360} 45% 32%))">${label?`<span>${esc(label)}</span>`:''}</div>`;
+
+/* ---------- views ---------- */
+const V={};
+V.home=()=>{
+  const up=upcoming(); const nx=up[0];
+  const mine=S.tasks.filter(x=>(x.l1===ME()||x.l2===ME())&&!done(x));
+  const over=mine.filter(x=>x.due<TODAY).sort((a,b)=>a.due<b.due?-1:1);
+  const week=mine.filter(x=>x.due>=TODAY&&diff(x.due,TODAY)<=7).sort((a,b)=>a.due<b.due?-1:1);
+  const d=nx?diff(nx.date,TODAY):0;
+  const taskRow=x=>{const e=evById(x.ev);return `<div class="task"><button class="chk" aria-label="Mark done" onclick="quickDone('${x.id}')"></button>
+    <div style="min-width:0"><div style="font-weight:600">${esc(x.t)}</div><div class="faint" style="font-size:.8rem">${esc(e.name)} · ${esc(x.dept)}</div></div>
+    <span class="pill ${x.due<TODAY?'bad':'sf'} num">${fmt(x.due)}</span></div>`};
+  return `
+  <div class="row between"><div><div class="eyebrow">${t('Jai Jinendra')}, ${ME()}</div><h1>Here is what needs you this week</h1></div>
+  ${isAdmin()?`<button class="btn pri" onclick="newEvent()">${ic('plus')}${t('New event')}</button>`:''}</div>
+  <section class="hero">
+    ${nx?`<div class="next" onclick="go('event','${nx.id}')" style="cursor:pointer">${MANDALA}
+      <div class="eyebrow">Next up · ${TYPES[nx.type].label}</div>
+      <h2>${esc(nx.name)}</h2>
+      <div class="row" style="gap:18px;align-items:flex-end"><div class="big num">${d}</div><div style="padding-bottom:6px">${t('days to go')}<br><span style="opacity:.75">${fmtY(nx.date)} · ${esc(nx.venue)}</span></div></div>
+      <div style="display:grid;gap:6px"><div class="row between" style="font-size:.85rem;opacity:.85"><span>Tracker progress</span><span class="num">${progress(nx.id)}%</span></div><div class="bar"><i style="width:${progress(nx.id)}%"></i></div></div>
+    </div>`:'<div class="card empty">No upcoming events</div>'}
+    <div class="card" style="display:grid;gap:4px;align-content:start">
+      <div class="row between"><h3>${t('My tasks')}</h3><span class="faint" style="font-size:.8rem">Lead or support</span></div>
+      ${over.length?`<div class="eyebrow" style="color:var(--bad);padding-top:8px">${t('Overdue')} · ${over.length}</div>${over.slice(0,3).map(taskRow).join('')}`:''}
+      <div class="eyebrow" style="padding-top:8px">${t('Due this week')} · ${week.length}</div>
+      ${week.length?week.slice(0,5).map(taskRow).join(''):'<div class="faint" style="padding:8px 0">Nothing due this week.</div>'}
+    </div>
+  </section>
+  <section class="grid" style="gap:12px">
+    <div class="row between"><h2>${t('Upcoming events')}</h2><button class="btn ghost sm" onclick="go('events')">See all</button></div>
+    <div class="grid g3">${up.slice(1,5).map(evCard).join('')}</div>
+  </section>
+  <section class="grid g2">
+    <div class="card" style="display:grid;gap:12px"><div class="row between"><h3>${t('Latest moments')}</h3><button class="btn ghost sm" onclick="go('moments')">Open wall</button></div>
+      <div class="minis">${S.moments.filter(m=>m.ok).slice(0,4).map(m=>`<div class="mini">${m.img?`<img src="${m.img}" alt="" style="width:100%;height:100%;object-fit:cover">`:art(m.hue,'','1')}</div>`).join('')}</div></div>
+    <div class="card" style="display:grid;gap:6px"><div class="row between"><h3>${t('Fresh ideas')}</h3><button class="btn ghost sm" onclick="go('ideas')">Idea Bank</button></div>
+      ${S.ideas.slice(0,3).map(i=>`<div class="task" style="grid-template-columns:1fr auto"><div style="min-width:0"><div style="font-weight:600">${esc(i.title)}</div><div class="faint" style="font-size:.8rem">${i.tags.map(esc).join(' · ')} · by ${esc(i.by)}</div></div><span class="pill ${i.status==='Shortlisted'?'gd':i.status==='Used'?'ok':''}">${i.status}</span></div>`).join('')}</div>
+  </section>`;
+};
+const evCard=e=>{const p=progress(e.id),d=diff(e.date,TODAY);const past=d<0;
+  return `<div class="card evcard" onclick="go('event','${e.id}')">
+  <div class="row" style="flex-wrap:nowrap">${evTag(e)}<div style="min-width:0"><div style="font-weight:600;line-height:1.25">${esc(e.name)}</div><div class="faint" style="font-size:.82rem">${fmtY(e.date)} · ${esc(e.venue)}</div></div></div>
+  <div class="row between" style="font-size:.82rem"><span class="pill ${past?'ok':d<=14?'sf':''}">${past?'Completed':d===0?'Today':d+' days to go'}</span><span class="num muted">${p}% done</span></div>
+  <div class="bar ${past?'ok':''}"><i style="width:${p}%"></i></div></div>`};
+function quickDone(id){const x=S.tasks.find(t=>t.id===id);x.st='Closed';save();render();toast('Marked closed')}
+
+V.events=()=>{
+  const up=upcoming(), past=S.events.filter(e=>e.date<TODAY).sort((a,b)=>a.date<b.date?1:-1);
+  return `<div class="row between"><div><div class="eyebrow">${S.events.length} events this cycle</div><h1>${t('Events')}</h1></div>${isAdmin()?`<button class="btn pri" onclick="newEvent()">${ic('plus')}${t('New event')}</button>`:''}</div>
+  <div class="note">${ic('info')}<div>Enter an event date and every task date is worked out from that event's template. Change any date by hand later, and it stays as you set it.</div></div>
+  <h3>Upcoming</h3><div class="grid g3">${up.map(evCard).join('')}</div>
+  <h3>Completed</h3><div class="grid g3">${past.map(evCard).join('')||'<div class="faint">None yet</div>'}</div>`;
+};
+
+/* event detail */
+let evTab='tracker', trView='list', fDept='', fSt='', fWho='';
+V.event=()=>{
+  const e=evById(S.ev); if(!e) return V.events();
+  const ts=tasksOf(e.id); const p=progress(e.id); const d=diff(e.date,TODAY);
+  const tabs=[['tracker','Tracker'],['roles','D-Day roles'],['flow','Event flow'],['guidance','Guidance'],['scripts','Scripts']];
+  if(isAdmin()) tabs.push(['money','Expenses']);
+  let body='';
+  if(evTab==='tracker'){
+    const f=ts.filter(x=>(!fDept||x.dept===fDept)&&(!fSt||x.st===fSt)&&(!fWho||x.l1===fWho||x.l2===fWho));
+    const filters=`<div class="row" style="gap:8px">
+      <select id="fdept" onchange="fDept=this.value;render()" style="width:auto"><option value="">All departments</option>${DEPTS.map(x=>`<option ${x===fDept?'selected':''}>${x}</option>`).join('')}</select>
+      <select id="fst" onchange="fSt=this.value;render()" style="width:auto"><option value="">All statuses</option>${STATUSES.map(x=>`<option ${x===fSt?'selected':''}>${x}</option>`).join('')}</select>
+      <select id="fwho" onchange="fWho=this.value;render()" style="width:auto"><option value="">Everyone</option>${TEAM.map(x=>`<option ${x===fWho?'selected':''}>${x}</option>`).join('')}</select>
+      <div class="sp" style="flex:1"></div>
+      <div class="seg"><button class="${trView==='list'?'on':''}" onclick="trView='list';render()">List</button><button class="${trView==='board'?'on':''}" onclick="trView='board';render()">Board</button></div>
+      ${isAdmin()?`<button class="btn sm" onclick="addTask()">${ic('plus')}Task</button>`:''}</div>`;
+    if(trView==='board'){
+      body=filters+`<div class="board">${STATUSES.map(s=>`<div class="col"><div class="row between"><b>${s}</b><span class="pill">${f.filter(x=>x.st===s).length}</span></div>
+        ${f.filter(x=>x.st===s).map(x=>`<div class="kc"><b>${esc(x.t)}</b><div class="row" style="gap:6px"><span class="pill ${x.due<TODAY&&!done(x)?'bad':''} num">${fmt(x.due)}</span><span class="pill">${esc(x.dept)}</span></div>
+        <div class="row between"><span class="faint">${esc(x.l1)}${x.l2?' + '+esc(x.l2):''}</span>
+        <select aria-label="Status" onchange="setSt('${x.id}',this.value)" style="width:auto;padding:2px 6px;font-size:.78rem">${STATUSES.map(o=>`<option ${o===x.st?'selected':''}>${o}</option>`).join('')}</select></div></div>`).join('')}</div>`).join('')}</div>`;
+    } else {
+      const groups=[['Pre event',x=>x.o<0],['During event',x=>x.o===0],['Post event',x=>x.o>0]];
+      body=filters+groups.map(([g,fn])=>{const rows=f.filter(fn);if(!rows.length)return '';
+        return `<div class="grid" style="gap:8px"><div class="row between"><h3>${g}</h3><span class="faint num">${rows.filter(done).length}/${rows.length} done</span></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Activity</th><th>Norm</th><th>Due</th><th>Department</th><th>Collateral</th><th>Lead</th><th>Status</th></tr></thead><tbody>
+        ${rows.map(x=>`<tr><td style="min-width:220px"><b style="font-weight:600">${esc(x.t)}</b>${x.x==='Internal'?' <span class="pill" style="font-size:.68rem">Internal</span>':''}</td>
+          <td class="faint num">${dLabel(x.o)}</td>
+          <td><div class="row" style="gap:4px;flex-wrap:nowrap"><input type="date" id="due-${x.id}" value="${x.due}" onchange="setDue('${x.id}',this.value)" ${isAdmin()||x.l1===ME()?'':'disabled'} style="${x.due<TODAY&&!done(x)?'border-color:var(--bad);color:var(--bad)':''}">${x.edited?`<span class="pill gd" title="Changed by hand">edited</span>`:''}</div></td>
+          <td class="muted">${esc(x.dept)}</td><td class="muted">${esc(x.col)}</td>
+          <td style="white-space:nowrap">${esc(x.l1)}${x.l2?`<span class="faint"> + ${esc(x.l2)}</span>`:''}</td>
+          <td><select aria-label="Status" onchange="setSt('${x.id}',this.value)" class="st-${STCLS[x.st]}">${STATUSES.map(o=>`<option ${o===x.st?'selected':''}>${o}</option>`).join('')}</select></td></tr>`).join('')}
+        </tbody></table></div></div>`}).join('')||'<div class="empty">No tasks match these filters.</div>';
+    }
+  }
+  if(evTab==='roles'){const rs=S.roles[e.id]||[];
+    body=`<div class="tbl-wrap"><table><thead><tr><th>Team member</th><th>Role on the day</th>${isAdmin()?'<th></th>':''}</tr></thead><tbody>
+    ${rs.map((r,i)=>`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td>${isAdmin()?`<td style="text-align:right"><button class="btn ghost sm" onclick="delRole(${i})">Remove</button></td>`:''}</tr>`).join('')||`<tr><td colspan="3" class="empty">No roles assigned yet.</td></tr>`}</tbody></table></div>
+    ${isAdmin()?`<div class="row"><select id="rwho" style="width:auto">${TEAM.map(x=>`<option>${x}</option>`).join('')}</select><input type="text" id="rrole" placeholder="e.g. Base station, Host, Registration desk" style="flex:1;min-width:200px"><button class="btn pri" onclick="addRole()">Add role</button></div>`:''}`;}
+  if(evTab==='flow'){const fl=S.flow[e.id]||[];
+    body=`<div class="card" style="display:grid;gap:0">${fl.map((r,i)=>`<div class="task" style="grid-template-columns:70px 1fr auto"><b class="num" style="color:var(--saffron)">${esc(r[0])}</b><span>${esc(r[1])}</span>${isAdmin()?`<button class="btn ghost sm" onclick="delFlow(${i})">Remove</button>`:'<span></span>'}</div>`).join('')||'<div class="empty">No run-of-show yet.</div>'}</div>
+    ${isAdmin()?`<div class="row"><input type="text" id="ftime" placeholder="07:30" style="width:90px"><input type="text" id="fwhat" placeholder="What happens" style="flex:1;min-width:200px"><button class="btn pri" onclick="addFlow()">Add to flow</button></div>`:''}`;}
+  if(evTab==='guidance'){const sc=TYPES[e.type].label;const gs=S.guidance.filter(g=>g.scope===sc||g.scope===e.name);
+    body=`<div class="faint">Notes from leadership that apply to ${esc(sc)} events or to this event.</div>
+    <div class="grid" style="gap:10px">${gs.map(g=>`<div class="card" style="display:grid;gap:4px;border-left:3px solid var(--gold)"><div>${esc(g.text)}</div><div class="faint" style="font-size:.8rem">${esc(g.by)} · ${esc(g.scope)}</div></div>`).join('')||'<div class="empty">No guidance noted yet.</div>'}</div>
+    ${isAdmin()?`<div class="card grid" style="gap:8px"><div class="row"><input type="text" id="gby" placeholder="From (e.g. Pujya Nileshbhai)" style="flex:1;min-width:180px"><select id="gscope" style="width:auto"><option>${esc(sc)}</option><option>${esc(e.name)}</option></select></div><textarea id="gtext" placeholder="Guidance note"></textarea><div><button class="btn pri" onclick="addGuid()">Save note</button></div></div>`:''}`;}
+  if(evTab==='scripts'){const sc=S.scripts[e.id]||[];
+    body=sc.map(s=>`<div class="card grid" style="gap:10px"><div class="row between"><h3>${esc(s.title)}</h3><span class="faint">${esc(s.by)}</span></div>
+      <div class="tbl-wrap"><table><thead><tr><th style="width:50%">Voiceover</th><th>Visuals</th></tr></thead><tbody>${s.lines.map(l=>`<tr><td>${esc(l[0])}</td><td class="muted">${esc(l[1])}</td></tr>`).join('')}</tbody></table></div></div>`).join('')||'<div class="empty">No scripts yet.</div>';
+    body+=`<div><button class="btn" onclick="addScript()">${ic('plus')}New script</button></div>`;}
+  if(evTab==='money'){ body=budgetBlock(e.id,true); }
+  return `<div class="row"><button class="btn ghost sm" onclick="go('events')">${ic('back')}Events</button></div>
+  <section class="card" style="display:grid;gap:14px">
+    <div class="row between" style="align-items:flex-start">
+      <div class="row" style="flex-wrap:nowrap;align-items:flex-start">${evTag(e,48)}<div><div class="eyebrow">${TYPES[e.type].label}</div><h1>${esc(e.name)}</h1><div class="muted">${esc(e.venue)}</div></div></div>
+      <div class="grid" style="gap:4px;min-width:180px">
+        <label class="eyebrow" for="evdate">Event date</label>
+        <input type="date" id="evdate" value="${e.date}" ${isAdmin()?'':'disabled'} onchange="setEvDate('${e.id}',this.value)">
+        <span class="faint" style="font-size:.78rem">${d<0?'Completed':d===0?'Today':d+' days to go'}</span>
+      </div>
+    </div>
+    <div class="row" style="gap:20px">
+      ${[['Tasks',ts.length],['Done',ts.filter(done).length],['In progress',ts.filter(x=>x.st==='WIP').length],['Overdue',ts.filter(x=>x.due<TODAY&&!done(x)).length]].map(([k,v])=>`<div><div class="eyebrow">${k}</div><div class="num" style="font-size:1.4rem;font-weight:600;${k==='Overdue'&&v?'color:var(--bad)':''}">${v}</div></div>`).join('')}
+      <div style="flex:1;min-width:160px;display:grid;gap:6px"><div class="row between"><span class="eyebrow">Progress</span><span class="num">${p}%</span></div><div class="bar"><i style="width:${p}%"></i></div></div>
+    </div>
+  </section>
+  <div class="tabs">${tabs.map(x=>`<button class="${evTab===x[0]?'on':''}" onclick="evTab='${x[0]}';render()">${x[1]}</button>`).join('')}</div>
+  ${body}`;
+};
+function setSt(id,v){S.tasks.find(x=>x.id===id).st=v;save();render()}
+function setDue(id,v){const x=S.tasks.find(x=>x.id===id);if(!v)return;x.due=v;x.edited=v!==addDays(evById(x.ev).date,x.o);save();render()}
+function setEvDate(id,v){if(!v)return;const e=evById(id);e.date=v;let kept=0;for(const x of tasksOf(id)){if(x.edited){kept++;continue}x.due=addDays(v,x.o)}save();render();toast(`Dates recalculated${kept?` · ${kept} hand-edited kept`:''}`)}
+function addRole(){const w=$('rwho').value,r=$('rrole').value.trim();if(!r)return;(S.roles[S.ev]=S.roles[S.ev]||[]).push([w,r]);save();render()}
+function delRole(i){S.roles[S.ev].splice(i,1);save();render()}
+function addFlow(){const a=$('ftime').value.trim(),b=$('fwhat').value.trim();if(!b)return;const f=(S.flow[S.ev]=S.flow[S.ev]||[]);f.push([a,b]);f.sort((x,y)=>x[0]<y[0]?-1:1);save();render()}
+function delFlow(i){S.flow[S.ev].splice(i,1);save();render()}
+function addGuid(){const tx=$('gtext').value.trim();if(!tx)return;S.guidance.push({id:uid(),scope:$('gscope').value,by:$('gby').value.trim()||'Team',text:tx});save();render()}
+function addScript(){modal(`<h2>New script</h2><div class="field"><label for="stitle">Title</label><input type="text" id="stitle" placeholder="Reel – registration open"></div>
+  <div class="field"><label for="sbody">Lines, one per row: voiceover | visuals</label><textarea id="sbody" rows="8" placeholder="Well… this! | Quick montage of cycles"></textarea></div>
+  <div class="row"><button class="btn pri" onclick="saveScript()">Save script</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveScript(){const ti=$('stitle').value.trim()||'Untitled script';const lines=$('sbody').value.split('\n').filter(Boolean).map(l=>{const [a,b]=l.split('|');return [a.trim(),(b||'').trim()]});(S.scripts[S.ev]=S.scripts[S.ev]||[]).push({id:uid(),title:ti,by:ME(),lines});closeModal();save();render()}
+function addTask(){modal(`<h2>Add task</h2>
+  <div class="field"><label for="nt">Activity</label><input type="text" id="nt"></div>
+  <div class="grid g2" style="gap:10px"><div class="field"><label for="nd">Department</label><select id="nd">${DEPTS.map(x=>`<option>${x}</option>`).join('')}</select></div>
+  <div class="field"><label for="ndue">Due date</label><input type="date" id="ndue" value="${evById(S.ev).date}"></div>
+  <div class="field"><label for="nl1">Lead</label><select id="nl1">${TEAM.map(x=>`<option>${x}</option>`).join('')}</select></div>
+  <div class="field"><label for="ncol">Collateral</label><input type="text" id="ncol" placeholder="Reel, Static, Print…"></div></div>
+  <div class="row"><button class="btn pri" onclick="saveTask()">Add task</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveTask(){const e=evById(S.ev);const due=$('ndue').value||e.date;S.tasks.push({id:uid(),ev:e.id,t:$('nt').value.trim()||'New task',dept:$('nd').value,col:$('ncol').value,x:'External',l1:$('nl1').value,l2:'',o:diff(due,e.date),due,edited:false,st:'To start',note:''});closeModal();save();render()}
+
+function newEvent(){modal(`<h2>New event</h2><p class="muted" style="margin:0">Pick the event type and date. The tracker is generated from that type's template.</p>
+  <div class="field"><label for="ntype">Event type</label><select id="ntype" onchange="$('nname').value=TYPES[this.value].label+(this.value==='smilescapes'?' · ':' ')+(this.value==='smilescapes'?'':new Date().getFullYear()+1);$('nven').value=TYPES[this.value].where">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.label} (${v.runway}-day runway)</option>`).join('')}</select></div>
+  <div class="field"><label for="nname">Name</label><input type="text" id="nname" value="Smilescapes · "></div>
+  <div class="grid g2" style="gap:10px"><div class="field"><label for="ndate">Event date</label><input type="date" id="ndate" value="${addDays(TODAY,30)}"></div>
+  <div class="field"><label for="nven">Venue</label><input type="text" id="nven" value="Mumbai"></div></div>
+  <div class="row"><button class="btn pri" onclick="saveEvent()">Create & generate tracker</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveEvent(){const e={id:'e'+uid(),type:$('ntype').value,name:$('nname').value.trim()||'New event',date:$('ndate').value||TODAY,venue:$('nven').value};S.events.push(e);genTasks(e);closeModal();evTab='tracker';go('event',e.id);toast(`${tasksOf(e.id).length} tasks generated`)}
+
+/* calendar */
+let calM=null;
+V.calendar=()=>{
+  if(!calM) calM=TODAY.slice(0,7);
+  const [y,m]=calM.split('-').map(Number); const first=new Date(y,m-1,1); const start=new Date(first); start.setDate(1-((first.getDay()+6)%7));
+  const days=[];for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);days.push(iso(d))}
+  const mineOnly=calMine;
+  const cells=days.map(ds=>{const evs=S.events.filter(e=>e.date===ds);const tks=S.tasks.filter(x=>x.due===ds&&(!mineOnly||x.l1===ME()||x.l2===ME()));
+    return `<div class="d ${ds.slice(0,7)!==calM?'out':''} ${ds===TODAY?'today':''}"><span class="n num">${parse(ds).getDate()}</span>
+    ${evs.map(e=>`<div class="it ev" onclick="go('event','${e.id}')" title="${esc(e.name)}">${esc(e.name)}</div>`).join('')}
+    ${tks.slice(0,3).map(x=>`<div class="it tk ${done(x)?'done':''}" title="${esc(x.t)} · ${esc(evById(x.ev).name)}" onclick="evTab='tracker';go('event','${x.ev}')">${esc(x.t)}</div>`).join('')}
+    ${tks.length>3?`<div class="faint" style="font-size:.7rem">+${tks.length-3} more</div>`:''}</div>`}).join('');
+  return `<div class="row between"><div><div class="eyebrow">Events and task deadlines</div><h1>${MON[m-1]} ${y}</h1></div>
+  <div class="row"><div class="seg"><button class="${!calMine?'on':''}" onclick="calMine=false;render()">All tasks</button><button class="${calMine?'on':''}" onclick="calMine=true;render()">Mine</button></div>
+  <button class="btn sm" onclick="shiftM(-1)">${ic('back')}</button><button class="btn sm" onclick="calM=TODAY.slice(0,7);render()">Today</button><button class="btn sm" onclick="shiftM(1)"><span style="display:inline-block;transform:scaleX(-1)">${ic('back')}</span></button></div></div>
+  <div style="overflow-x:auto"><div class="cal" style="min-width:640px">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x=>`<div class="dh">${x}</div>`).join('')}${cells}</div></div>
+  <div class="row faint" style="font-size:.82rem"><span class="pill in">Event</span><span class="pill sf">Task due</span><span class="pill" style="text-decoration:line-through">Done</span></div>`;
+};
+let calMine=false;
+function shiftM(n){const [y,m]=calM.split('-').map(Number);const d=new Date(y,m-1+n,1);calM=iso(d).slice(0,7);render()}
+
+/* expenses & vendors */
+let exTab='expenses', exEv='e1';
+V.expenses=()=>{
+  const evOpts=S.events.map(e=>`<option value="${e.id}" ${e.id===exEv?'selected':''}>${esc(e.name)}</option>`).join('');
+  let body='';
+  if(exTab==='expenses'){
+    const rows=S.expenses.filter(x=>x.ev===exEv&&(isAdmin()||x.by===ME()));
+    const tot=rows.reduce((a,b)=>a+b.amt,0), miss=rows.filter(x=>!x.bill).length;
+    body=`<div class="row between"><select id="exev" onchange="exEv=this.value;render()" style="width:auto">${evOpts}</select>
+      <div class="row">${isAdmin()?`<button class="btn" onclick="reportModal('${exEv}')">${ic('file')}Expense report & bills pack</button>`:''}<button class="btn pri" onclick="addExpense()">${ic('plus')}Log expense</button></div></div>
+    ${isAdmin()?`<div class="row" style="gap:24px"><div><div class="eyebrow">Spent</div><div class="num" style="font-size:1.5rem;font-weight:600">${inr(tot)}</div></div><div><div class="eyebrow">Entries</div><div class="num" style="font-size:1.5rem;font-weight:600">${rows.length}</div></div><div><div class="eyebrow">Bills missing</div><div class="num" style="font-size:1.5rem;font-weight:600;${miss?'color:var(--bad)':''}">${miss}</div></div></div>`:`<div class="note">${ic('info')}<div>You see the expenses you logged. Totals and budgets are visible to admins.</div></div>`}
+    <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Item</th><th>Budget head</th><th>Vendor</th><th>Quoted</th><th>Actual</th><th>Paid by</th><th>Bill</th></tr></thead><tbody>
+    ${rows.map(x=>`<tr><td class="num faint">${fmt(x.date)}</td><td style="min-width:180px"><b style="font-weight:600">${esc(x.item)}</b></td><td>${esc(x.head)}</td><td class="muted">${esc(vName(x.vendor))}</td><td class="num muted">${x.quote?inr(x.quote):'—'}</td><td class="num"><b>${inr(x.amt)}</b></td><td>${esc(x.by)}</td>
+      <td>${x.bill?`<span class="pill ok">${ic('file','style="width:12px;height:12px"')}${esc(x.file||'Uploaded')}</span>`:`<button class="btn sm" onclick="attachBill('${x.id}')">${ic('up')}Upload bill</button>`}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">No expenses logged yet.</td></tr>'}
+    </tbody></table></div>`;
+  }
+  if(exTab==='vendors'){
+    body=`<div class="row between"><input type="search" id="vq" placeholder="Search vendors or categories" value="${esc(vq)}" oninput="vq=this.value;render();setTimeout(()=>{const i=$('vq');i.focus();i.setSelectionRange(i.value.length,i.value.length)})" style="max-width:320px"><button class="btn pri" onclick="addVendor()">${ic('plus')}Add vendor</button></div>
+    <div class="grid g3">${S.vendors.filter(v=>(v.name+v.cat+v.city).toLowerCase().includes(vq.toLowerCase())).map(v=>`<div class="card grid" style="gap:6px"><div class="row between"><b>${esc(v.name)}</b><span class="faint">${'★'.repeat(v.rating)}${'☆'.repeat(5-v.rating)}</span></div>
+      <div class="row" style="gap:6px"><span class="pill gd">${esc(v.cat)}</span><span class="pill">${esc(v.city)}</span></div>
+      <div class="muted" style="font-size:.86rem">${esc(v.contact)}</div><div class="faint" style="font-size:.78rem">GST ${esc(v.gst)}</div>
+      <div class="faint" style="font-size:.78rem">Used in ${new Set(S.expenses.filter(e=>e.vendor===v.id).map(e=>e.ev)).size} event(s)</div></div>`).join('')}</div>`;
+  }
+  if(exTab==='quotes'){
+    const rows=S.quotes.filter(q=>q.ev===exEv);
+    body=`<div class="row between"><select onchange="exEv=this.value;render()" style="width:auto">${evOpts}</select><button class="btn pri" onclick="addQuote()">${ic('plus')}Add quotation</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Vendor</th><th>For</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+    ${rows.map(q=>`<tr><td><b>${esc(vName(q.vendor))}</b></td><td>${esc(q.item)}</td><td class="num">${inr(q.amt)}</td><td><span class="pill ${q.status==='Selected'?'ok':q.status==='Rejected'?'bad':'warn'}">${q.status}</span></td></tr>`).join('')||'<tr><td colspan="4" class="empty">No quotations for this event yet.</td></tr>'}
+    </tbody></table></div>`;
+  }
+  return `<div><div class="eyebrow">Every rupee, every bill</div><h1>${t('Expenses & vendors')}</h1></div>
+  <div class="tabs">${[['expenses','Expenses'],['quotes','Quotations'],['vendors','Vendors']].map(x=>`<button class="${exTab===x[0]?'on':''}" onclick="exTab='${x[0]}';render()">${x[1]}</button>`).join('')}</div>${body}`;
+};
+let vq='';
+const vName=id=>(S.vendors.find(v=>v.id===id)||{}).name||'—';
+const heads=ev=>Object.keys(S.heads[ev]||{'General':0});
+function addExpense(){modal(`<h2>Log expense</h2>
+  <div class="field"><label for="xi">What was it for?</label><input type="text" id="xi" placeholder="e.g. Balloons for photo corner"></div>
+  <div class="grid g2" style="gap:10px">
+  <div class="field"><label for="xh">Budget head</label><select id="xh">${heads(exEv).map(h=>`<option>${esc(h)}</option>`).join('')}</select></div>
+  <div class="field"><label for="xv">Vendor</label><select id="xv"><option value="">— None / local purchase —</option>${S.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></div>
+  <div class="field"><label for="xq">Quoted (₹)</label><input type="number" id="xq" min="0"></div>
+  <div class="field"><label for="xa">Actual spent (₹)</label><input type="number" id="xa" min="0"></div>
+  <div class="field"><label for="xb">Paid by</label><select id="xb">${TEAM.map(x=>`<option ${x===ME()?'selected':''}>${x}</option>`).join('')}</select></div>
+  <div class="field"><label for="xd">Date</label><input type="date" id="xd" value="${TODAY}"></div></div>
+  <div class="field"><label for="xf">Bill (photo or PDF)</label><input type="file" id="xf" accept="image/*,.pdf"></div>
+  <div class="row"><button class="btn pri" onclick="saveExpense()">Save expense</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveExpense(){const f=$('xf').files[0];S.expenses.push({id:uid(),ev:exEv,item:$('xi').value.trim()||'Expense',head:$('xh').value,vendor:$('xv').value,quote:+$('xq').value||0,amt:+$('xa').value||0,by:$('xb').value,bill:!!f,file:f?f.name:'',date:$('xd').value||TODAY});closeModal();save();render();toast('Expense saved')}
+function attachBill(id){const inp=document.createElement('input');inp.type='file';inp.accept='image/*,.pdf';inp.onchange=()=>{const f=inp.files[0];if(!f)return;const x=S.expenses.find(e=>e.id===id);x.bill=true;x.file=f.name;save();render();toast('Bill attached')};inp.click()}
+function addVendor(){modal(`<h2>Add vendor</h2><div class="grid g2" style="gap:10px">
+  ${[['vn','Name'],['vc','Category'],['vct','Contact person & phone'],['vcity','City'],['vg','GST number']].map(([i,l])=>`<div class="field"><label for="${i}">${l}</label><input type="text" id="${i}"></div>`).join('')}
+  <div class="field"><label for="vr">Rating</label><select id="vr">${[5,4,3,2,1].map(n=>`<option>${n}</option>`).join('')}</select></div></div>
+  <div class="row"><button class="btn pri" onclick="saveVendor()">Save vendor</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveVendor(){S.vendors.push({id:'v'+uid(),name:$('vn').value||'New vendor',cat:$('vc').value||'General',contact:$('vct').value,city:$('vcity').value,gst:$('vg').value||'—',rating:+$('vr').value});closeModal();save();render()}
+function addQuote(){modal(`<h2>Add quotation</h2>
+  <div class="field"><label for="qv">Vendor</label><select id="qv">${S.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('')}</select></div>
+  <div class="field"><label for="qi">For</label><input type="text" id="qi"></div>
+  <div class="grid g2" style="gap:10px"><div class="field"><label for="qa">Amount (₹)</label><input type="number" id="qa"></div>
+  <div class="field"><label for="qs">Status</label><select id="qs"><option>Under review</option><option>Selected</option><option>Rejected</option></select></div></div>
+  <div class="field"><label for="qf">Quotation file</label><input type="file" id="qf" accept="image/*,.pdf"></div>
+  <div class="row"><button class="btn pri" onclick="saveQuote()">Save quotation</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveQuote(){S.quotes.push({id:uid(),ev:exEv,vendor:$('qv').value,item:$('qi').value||'—',amt:+$('qa').value||0,status:$('qs').value});closeModal();save();render()}
+
+/* budget */
+let bEv='e3';
+function budgetBlock(ev,compact){
+  const h=S.heads[ev]||{}; const ex=S.expenses.filter(x=>x.ev===ev);
+  const sanc=Object.values(h).reduce((a,b)=>a+b,0), spent=ex.reduce((a,b)=>a+b.amt,0);
+  const pct=sanc?Math.round(spent/sanc*100):0;
+  const rows=Object.entries(h).map(([k,v])=>{const s=ex.filter(x=>x.head===k).reduce((a,b)=>a+b.amt,0);const p=v?Math.round(s/v*100):0;return {k,v,s,p}});
+  return `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+    ${[['Sanctioned',inr(sanc),''],['Spent',inr(spent),pct+'% used'],['Remaining',inr(sanc-spent),sanc-spent<0?'Over budget':''],['Bills missing',ex.filter(x=>!x.bill).length,'of '+ex.length+' entries']].map(([k,v,s])=>`<div class="card"><div class="eyebrow">${k}</div><div class="num" style="font-size:1.45rem;font-weight:600">${v}</div><div class="faint" style="font-size:.8rem">${s||'&nbsp;'}</div></div>`).join('')}</div>
+  <div class="card grid" style="gap:14px"><div class="row between"><h3>Sanctioned vs spent, by head</h3>${compact?'':`<button class="btn sm" onclick="editHeads('${ev}')">Edit sanctioned amounts</button>`}</div>
+   ${rows.map(r=>`<div class="grid" style="gap:5px"><div class="row between"><b>${esc(r.k)}</b><span class="num muted">${inr(r.s)} <span class="faint">/ ${inr(r.v)}</span></span></div>
+   <div class="bar ${r.p>100?'bad':r.p>85?'gd':'ok'}"><i style="width:${Math.min(r.p,100)}%"></i></div></div>`).join('')||'<div class="faint">No budget heads yet. Add sanctioned amounts to start tracking.</div>'}
+  </div>`;
+}
+V.budget=()=>{
+  if(!isAdmin()) return V.home();
+  return `<div class="row between"><div><div class="eyebrow">Admin only</div><h1>${t('Budget')}</h1></div>
+   <div class="row"><select id="bev" onchange="bEv=this.value;render()" style="width:auto">${S.events.map(e=>`<option value="${e.id}" ${e.id===bEv?'selected':''}>${esc(e.name)}</option>`).join('')}</select>
+   <button class="btn pri" onclick="reportModal('${bEv}')">${ic('file')}Report</button></div></div>
+  ${budgetBlock(bEv)}
+  <div class="card grid" style="gap:10px"><h3>All events this cycle</h3>
+  <div class="tbl-wrap"><table><thead><tr><th>Event</th><th>Sanctioned</th><th>Spent</th><th>Used</th><th></th></tr></thead><tbody>
+  ${S.events.map(e=>{const s=Object.values(S.heads[e.id]||{}).reduce((a,b)=>a+b,0),sp=S.expenses.filter(x=>x.ev===e.id).reduce((a,b)=>a+b.amt,0),p=s?Math.round(sp/s*100):0;
+   return `<tr><td><b>${esc(e.name)}</b></td><td class="num">${s?inr(s):'<span class="faint">Not set</span>'}</td><td class="num">${inr(sp)}</td><td style="min-width:120px"><div class="bar ${p>100?'bad':'ok'}"><i style="width:${Math.min(p,100)}%"></i></div></td><td><button class="btn ghost sm" onclick="bEv='${e.id}';render()">Open</button></td></tr>`}).join('')}
+  </tbody></table></div></div>
+  <div class="card grid" style="gap:8px"><h3>Report format</h3><div class="muted">Upload your organisation's report template (Excel or Word). Reports will be filled into that layout once the backend is connected.</div>
+  <div class="row"><input type="file" id="rtpl" accept=".xlsx,.xls,.docx,.pdf" onchange="S.rtpl=this.files[0]&&this.files[0].name;save();render()" style="max-width:320px">${S.rtpl?`<span class="pill ok">Template: ${esc(S.rtpl)}</span>`:'<span class="pill">Using default format</span>'}</div></div>`;
+};
+function editHeads(ev){const h=S.heads[ev]||{};const list=Object.entries(h);
+  modal(`<h2>Sanctioned amounts</h2><div id="hl" class="grid" style="gap:8px">${(list.length?list:[['Decor',0],['Printing',0],['Marketing',0]]).map(([k,v],i)=>`<div class="row"><input type="text" class="hk" value="${esc(k)}" style="flex:1"><input type="number" class="hv" value="${v}" style="width:140px"></div>`).join('')}</div>
+  <div><button class="btn sm" onclick="$('hl').insertAdjacentHTML('beforeend','<div class=&quot;row&quot;><input type=&quot;text&quot; class=&quot;hk&quot; placeholder=&quot;Head&quot; style=&quot;flex:1&quot;><input type=&quot;number&quot; class=&quot;hv&quot; style=&quot;width:140px&quot;></div>')">${ic('plus')}Add head</button></div>
+  <div class="row"><button class="btn pri" onclick="saveHeads('${ev}')">Save</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveHeads(ev){const ks=[...document.querySelectorAll('.hk')],vs=[...document.querySelectorAll('.hv')];const h={};ks.forEach((k,i)=>{if(k.value.trim())h[k.value.trim()]=+vs[i].value||0});S.heads[ev]=h;closeModal();save();render()}
+function reportModal(ev){const e=evById(ev);const ex=S.expenses.filter(x=>x.ev===ev);const h=S.heads[ev]||{};
+  const sanc=Object.values(h).reduce((a,b)=>a+b,0),spent=ex.reduce((a,b)=>a+b.amt,0);
+  modal(`<div class="row between"><h2>Expense report</h2><button class="btn ghost" onclick="closeModal()">${ic('x')}</button></div>
+  <div class="report">
+    <div class="row between" style="align-items:flex-start"><div><div class="eyebrow">Shrimad Rajchandra Aatma Tatva Research Centre · Events team</div><h2>${esc(e.name)}</h2><div class="muted">${fmtY(e.date)} · ${esc(e.venue)}</div></div>${logo(40)}</div>
+    <div class="row" style="gap:24px"><div><div class="eyebrow">Sanctioned</div><b class="num">${inr(sanc)}</b></div><div><div class="eyebrow">Spent</div><b class="num">${inr(spent)}</b></div><div><div class="eyebrow">Variance</div><b class="num" style="color:${sanc-spent<0?'var(--bad)':'var(--ok)'}">${inr(sanc-spent)}</b></div></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Head</th><th>Sanctioned</th><th>Spent</th><th>Variance</th></tr></thead><tbody>${Object.entries(h).map(([k,v])=>{const s=ex.filter(x=>x.head===k).reduce((a,b)=>a+b.amt,0);return `<tr><td>${esc(k)}</td><td class="num">${inr(v)}</td><td class="num">${inr(s)}</td><td class="num">${inr(v-s)}</td></tr>`}).join('')}</tbody></table></div>
+    <div><div class="eyebrow" style="padding-bottom:6px">Annexure · Bills pack (${ex.filter(x=>x.bill).length} of ${ex.length} bills)</div>
+    ${ex.map((x,i)=>`<div class="task" style="grid-template-columns:28px 1fr auto"><span class="faint num">${i+1}</span><span>${esc(x.item)} <span class="faint">· ${esc(x.by)}</span></span>${x.bill?`<span class="pill ok">${esc(x.file)}</span>`:'<span class="pill bad">Bill missing</span>'}</div>`).join('')}</div>
+  </div>
+  <div class="note">${ic('info')}<div>Prototype preview. In the full app, “Download” will produce this report in your uploaded format, plus one combined PDF of every bill. Both are saved to the event's folder for future reference.</div></div>
+  <div class="row"><button class="btn pri" onclick="toast('Download connects in the backend phase')">Download report</button><button class="btn" onclick="toast('Bills PDF connects in the backend phase')">Download bills PDF</button></div>`,true)}
+
+/* idea bank */
+let iTag='', iSt='';
+V.ideas=()=>{
+  const list=S.ideas.filter(i=>(!iTag||i.tags.includes(iTag))&&(!iSt||i.status===iSt));
+  return `<div class="row between"><div><div class="eyebrow">Activity cupboard</div><h1>${t('Idea Bank')}</h1></div>
+   <div class="row"><button class="btn" onclick="shareLink()">${ic('link')}Public submit link</button><button class="btn pri" onclick="addIdea()">${ic('plus')}Add idea</button></div></div>
+  <div class="row" style="gap:6px"><button class="pill ${!iTag?'sf':''}" style="border:0;cursor:pointer" onclick="iTag='';render()">All</button>${S.tags.map(g=>`<button class="pill ${iTag===g?'sf':''}" style="border:0;cursor:pointer" onclick="iTag='${esc(g)}';render()">${esc(g)}</button>`).join('')}
+   ${isAdmin()?`<button class="pill" style="border:1px dashed var(--line);cursor:pointer;background:none" onclick="addTag()">+ tag</button>`:''}</div>
+  <div class="seg" style="justify-self:start">${['','New','Shortlisted','Used'].map(s=>`<button class="${iSt===s?'on':''}" onclick="iSt='${s}';render()">${s||'Any status'}</button>`).join('')}</div>
+  <div class="grid g3">${list.map(i=>`<div class="card grid" style="gap:8px;align-content:start">
+    <div class="row between" style="align-items:flex-start;flex-wrap:nowrap"><h3>${esc(i.title)}</h3>
+     ${isAdmin()?`<select aria-label="Status" onchange="setIdea('${i.id}',this.value)" style="width:auto;padding:2px 6px;font-size:.78rem">${['New','Shortlisted','Used'].map(s=>`<option ${s===i.status?'selected':''}>${s}</option>`).join('')}</select>`:`<span class="pill ${i.status==='Shortlisted'?'gd':i.status==='Used'?'ok':''}">${i.status}</span>`}</div>
+    <div class="muted" style="font-size:.9rem">${esc(i.desc)}</div>
+    <div class="row" style="gap:5px">${i.tags.map(g=>`<span class="pill in">${esc(g)}</span>`).join('')}</div>
+    ${i.ref?`<a href="${esc(i.ref)}" target="_blank" rel="noopener" style="color:var(--saffron);font-size:.85rem">${ic('link','style="width:14px;height:14px;vertical-align:-2px"')} Reference</a>`:''}
+    ${i.used?`<div class="faint" style="font-size:.8rem">Used in ${esc(i.used)}</div>`:''}
+    <div class="faint" style="font-size:.8rem">by ${esc(i.by)}</div>
+    <div style="border-top:1px solid var(--line);padding-top:8px;display:grid;gap:6px">
+     ${i.comments.map(c=>`<div style="font-size:.85rem"><b>${esc(c.by)}</b> <span class="muted">${esc(c.t)}</span></div>`).join('')}
+     <div class="row" style="flex-wrap:nowrap"><input type="text" id="c-${i.id}" placeholder="Add a comment" style="font-size:.85rem;padding:5px 8px"><button class="btn sm" onclick="comment('${i.id}')">Post</button></div>
+    </div></div>`).join('')||'<div class="empty">No ideas match.</div>'}</div>`;
+};
+function setIdea(id,v){S.ideas.find(i=>i.id===id).status=v;save();render()}
+function comment(id){const v=$('c-'+id).value.trim();if(!v)return;S.ideas.find(i=>i.id===id).comments.push({by:ME(),t:v});save();render()}
+function addTag(){modal(`<h2>New tag</h2><div class="field"><label for="ntag">Tag name</label><input type="text" id="ntag" placeholder="e.g. Kids activity"></div><div class="row"><button class="btn pri" onclick="const v=$('ntag').value.trim();if(v&&!S.tags.includes(v))S.tags.push(v);closeModal();save();render()">Add tag</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+const ideaForm=(pub)=>`<div class="field"><label for="it">Idea title</label><input type="text" id="it" placeholder="Give it a short name"></div>
+  <div class="field"><label for="id2">Describe it</label><textarea id="id2" placeholder="What happens, how many people, what's needed"></textarea></div>
+  <div class="field"><label>What is it for?</label><div class="row" style="gap:6px">${S.tags.map((g,k)=>`<label class="pill" style="cursor:pointer"><input type="checkbox" class="itag" value="${esc(g)}" id="itag${k}"> ${esc(g)}</label>`).join('')}</div></div>
+  <div class="field"><label for="iref">Reference link (optional)</label><input type="text" id="iref" placeholder="Instagram, YouTube, Pinterest…"></div>
+  ${pub?`<div class="field"><label for="iby">Your name (optional)</label><input type="text" id="iby"></div>`:''}`;
+function addIdea(){modal(`<h2>Add idea</h2>${ideaForm(false)}<div class="row"><button class="btn pri" onclick="saveIdea(false)">Save idea</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveIdea(pub){const ti=$('it').value.trim();if(!ti){toast('Add a title first');return}
+  S.ideas.unshift({id:uid(),title:ti,desc:$('id2').value.trim(),tags:[...document.querySelectorAll('.itag:checked')].map(c=>c.value),status:'New',by:pub?($('iby').value.trim()||'Public submission'):ME(),ref:$('iref').value.trim(),comments:[],used:''});
+  save(); if(pub){pubDone=true;render()} else {closeModal();render();toast('Idea saved')}}
+function shareLink(){modal(`<h2>Public submit link</h2><p class="muted" style="margin:0">Anyone with this link can add an idea. They can't see the Idea Bank or anything else in the app.</p>
+  <div class="row" style="flex-wrap:nowrap"><input type="text" id="plink" readonly value="https://gennext-events.app/submit-idea"><button class="btn" onclick="copyLink()">Copy</button></div>
+  <div class="row"><button class="btn pri" onclick="closeModal();S.view='submit';render()">Preview the public page</button><button class="btn" onclick="closeModal()">Close</button></div>`)}
+function copyLink(){const i=$('plink');navigator.clipboard.writeText(i.value).then(()=>toast('Link copied')).catch(()=>{i.select();toast('Press Ctrl+C to copy')})}
+let pubDone=false;
+V.submit=()=>`<div class="public">
+  <div class="row">${logo(40)}<div><b style="font-family:var(--f-display);font-size:1.2rem">Gennext Events</b><div class="faint" style="font-size:.8rem">Events team · Shrimad Rajchandra Aatma Tatva Research Centre</div></div></div>
+  ${pubDone?`<div class="card grid" style="gap:10px;text-align:center"><h1>Thank you</h1><p class="muted">Your idea is in the Idea Bank. The events team reviews every submission.</p><button class="btn" onclick="pubDone=false;render()">Share another idea</button></div>`:
+  `<div><h1>Share an idea with the events team</h1><p class="muted">A dance, a skit, an opening moment, a fun activity. Anything you'd love to see at an RC event or a Smilescape.</p></div>
+  <div class="card grid" style="gap:14px">${ideaForm(true)}<button class="btn pri" onclick="saveIdea(true)">Submit idea</button></div>`}
+  ${location.hash.replace('#','')==='submit'?'':`<button class="btn ghost sm" onclick="pubDone=false;go('ideas')">${ic('back')}Back to the app (prototype only)</button>`}
+</div>`;
+
+/* moments */
+V.moments=()=>{
+  const pend=S.moments.filter(m=>!m.ok);
+  return `<div class="row between"><div><div class="eyebrow">Something nice to look at</div><h1>${t('Our Moments')}</h1></div><button class="btn pri" onclick="addMoment()">${ic('up')}Share a moment</button></div>
+  ${isAdmin()&&pend.length?`<div class="card grid" style="gap:10px;border-color:var(--gold)"><div class="row between"><h3>Waiting for approval</h3><span class="pill gd">${pend.length}</span></div>
+   <div class="grid g3">${pend.map(m=>`<div class="row" style="flex-wrap:nowrap"><div style="width:72px;flex:none;border-radius:8px;overflow:hidden">${m.img?`<img src="${m.img}" alt="">`:art(m.hue,'','1')}</div><div style="min-width:0;flex:1"><b>${esc(m.cap)}</b><div class="faint" style="font-size:.8rem">${esc(m.by)} · ${esc(m.ev)}</div>
+   <div class="row" style="gap:6px;margin-top:6px"><button class="btn sm pri" onclick="approve('${m.id}',true)">Approve</button><button class="btn sm" onclick="approve('${m.id}',false)">Decline</button></div></div></div>`).join('')}</div></div>`:''}
+  ${!isAdmin()&&pend.some(m=>m.by===ME())?`<div class="note">${ic('info')}<div>Your post is waiting for an admin to approve it.</div></div>`:''}
+  <div class="wall">${S.moments.filter(m=>m.ok).map(m=>`<figure class="moment" style="margin:0 0 14px">${m.img?`<img src="${m.img}" alt="${esc(m.cap)}">`:art(m.hue,'',`1/${m.h}`)}<figcaption class="cap"><b>${esc(m.cap)}</b><div class="faint" style="font-size:.8rem">${esc(m.ev)} · ${esc(m.by)}</div></figcaption></figure>`).join('')}</div>`;
+};
+function addMoment(){modal(`<h2>Share a moment</h2>
+  <div class="field"><label for="mf">Photo</label><input type="file" id="mf" accept="image/*"></div>
+  <div class="field"><label for="mc">Caption</label><input type="text" id="mc" placeholder="What's happening here?"></div>
+  <div class="field"><label for="me">Event</label><select id="me">${S.events.map(e=>`<option>${esc(e.name)}</option>`).join('')}</select></div>
+  <div class="row"><button class="btn pri" onclick="saveMoment()">Post</button><button class="btn" onclick="closeModal()">Cancel</button></div>`)}
+function saveMoment(){const f=$('mf').files[0];const fin=img=>{S.moments.unshift({id:uid(),cap:$('mc').value||'A lovely moment',ev:$('me').value,by:ME(),hue:Math.floor(Math.random()*360),h:1,ok:false,img});closeModal();save();render();toast(isAdmin()?'Posted. Approve it below':'Sent for approval')};
+  if(f){const r=new FileReader();r.onload=()=>shrink(r.result,900,fin);r.readAsDataURL(f)}else fin('')}
+function shrink(src,max,cb){const im=new Image();im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.82))};im.onerror=()=>cb('');im.src=src}
+function approve(id,ok){if(ok)S.moments.find(m=>m.id===id).ok=true;else S.moments=S.moments.filter(m=>m.id!==id);save();render()}
+
+/* library */
+let libPath=[], libKind='', libQ='';
+V.library=()=>{
+  const L=S.library; let crumbs=`<button class="btn ghost sm" onclick="libPath=[];render()">All events</button>`+libPath.map((p,i)=>` <span class="faint">/</span> <button class="btn ghost sm" onclick="libPath=libPath.slice(0,${i+1});render()">${esc(p)}</button>`).join('');
+  let body='';
+  if(libQ){const hits=[];for(const [ev,ys] of Object.entries(L))for(const [y,fs] of Object.entries(ys))for(const f of fs)if((ev+' '+y+' '+f[0]+' '+f[1]).toLowerCase().includes(libQ.toLowerCase()))hits.push([ev,y,f]);
+    body=`<div class="grid g3">${hits.map(([ev,y,f])=>fileTile(f,ev,y)).join('')||'<div class="empty">Nothing found.</div>'}</div>`}
+  else if(libPath.length===0){body=`<div class="grid g3">${Object.entries(L).map(([ev,ys])=>`<div class="folder" onclick="libPath=['${esc(ev)}'];render()">${ic('lib')}<div><b>${esc(ev)}</b><div class="faint" style="font-size:.8rem">${Object.keys(ys).length} year(s) · ${Object.values(ys).flat().length} items</div></div></div>`).join('')}</div>`}
+  else if(libPath.length===1){const ys=L[libPath[0]]||{};body=`<div class="grid g3">${Object.entries(ys).sort((a,b)=>a[0]<b[0]?1:-1).map(([y,fs])=>`<div class="folder" onclick="libPath=['${esc(libPath[0])}','${y}'];render()">${ic('lib')}<div><b>${y}</b><div class="faint" style="font-size:.8rem">${fs.length} items</div></div></div>`).join('')}</div>`}
+  else {const fs=(L[libPath[0]]||{})[libPath[1]]||[];body=`<div class="seg" style="justify-self:start">${['','Photo','Creative','Logo'].map(k=>`<button class="${libKind===k?'on':''}" onclick="libKind='${k}';render()">${k||'All'}</button>`).join('')}</div>
+    <div class="grid g3">${fs.filter(f=>!libKind||f[1]===libKind).map(f=>fileTile(f,libPath[0],libPath[1])).join('')}</div>`}
+  return `<div class="row between"><div><div class="eyebrow">Photos · logos · past creatives</div><h1>${t('Library')}</h1></div><button class="btn pri" onclick="toast('Uploads go to the matching Drive folder once connected')">${ic('up')}Upload</button></div>
+  <div class="note">${ic('info')}<div><b>Connected to Google Drive.</b> Files stay in your shared Drive (Event → Year). The app indexes and tags them so they are easy to search and preview. <span class="faint">(Sample folders shown. The live connection comes in the backend phase.)</span></div></div>
+  <input type="search" id="libq" placeholder="Search e.g. “Prem Mahotsav key visual 2025” or “logo white”" value="${esc(libQ)}" oninput="libQ=this.value;render();setTimeout(()=>{const i=$('libq');i.focus();i.setSelectionRange(i.value.length,i.value.length)})">
+  ${libQ?'':`<div class="row" style="gap:2px">${crumbs}</div>`}${body}`;
+};
+const fileTile=(f,ev,y)=>`<div class="file">${art(f[2],f[1]==='Logo'?f[0]:'')}<div class="meta"><b>${esc(f[0])}</b><div class="row between"><span class="faint">${esc(ev)} · ${esc(y)}</span><span class="pill ${f[1]==='Creative'?'sf':f[1]==='Logo'?'gd':'in'}">${f[1]}</span></div></div></div>`;
+
+/* guidelines + checker */
+let gTab='rules', chkImg='', chkRes=null, chkEv='Smilescapes', chkFmt='Instagram post';
+V.guidelines=()=>{
+  let body='';
+  if(gTab==='rules'){const cats=[...new Set(S.rules.map(r=>r.cat))];
+    body=cats.map(c=>`<div class="grid" style="gap:8px"><h3>${esc(c)}</h3>${S.rules.filter(r=>r.cat===c).map(r=>`<div class="card row" style="flex-wrap:nowrap;align-items:flex-start;padding:12px 14px"><span style="color:var(--gold)">${ic('check','style="width:18px;height:18px"')}</span><div style="flex:1">${esc(r.text)}</div>${isAdmin()?`<button class="btn ghost sm" onclick="delRule('${r.id}')">Remove</button>`:''}</div>`).join('')}</div>`).join('')+
+    (isAdmin()?`<div class="card grid" style="gap:8px"><h3>Add a guideline</h3><div class="row"><input type="text" id="rcat" placeholder="Category (Logo, Colour…)" style="width:200px"><input type="text" id="rtext" placeholder="The rule" style="flex:1;min-width:220px"><button class="btn pri" onclick="addRule()">Add</button></div></div>`:'')}
+  else {
+    body=`<div class="grid g2" style="align-items:start">
+    <div class="grid" style="gap:12px">
+      <label class="drop" for="cfile">${chkImg?`<img src="${chkImg}" alt="Creative to check">`:`${ic('up','style="width:32px;height:32px;color:var(--saffron)"')}<b>Drop a creative here or tap to upload</b><span class="faint">PNG or JPG: posts, stories, banners</span>`}</label>
+      <input type="file" id="cfile" accept="image/*" hidden onchange="loadChk(this)">
+      <div class="grid g2" style="gap:10px"><div class="field"><label for="cev">Event</label><select id="cev" onchange="chkEv=this.value">${['Smilescapes',...Object.values(TYPES).filter(x=>x.label!=='Smilescapes').map(x=>x.label)].map(x=>`<option ${x===chkEv?'selected':''}>${x}</option>`).join('')}</select></div>
+      <div class="field"><label for="cfmt">Format</label><select id="cfmt" onchange="chkFmt=this.value">${['Instagram post','Instagram story','WhatsApp creative','Print banner'].map(x=>`<option ${x===chkFmt?'selected':''}>${x}</option>`).join('')}</select></div></div>
+      <button class="btn pri" ${chkImg?'':'disabled style="opacity:.5"'} onclick="runChk()">Check against ${S.rules.length} guidelines</button>
+    </div>
+    <div class="card">${chkRes?resView():`<div class="empty">Upload a creative to see which guidelines it follows and what to fix.</div>`}</div></div>`;
+  }
+  return `<div><div class="eyebrow">For everyone who makes creatives</div><h1>${t('Creative guidelines')}</h1></div>
+  <div class="tabs">${[['rules','Guidelines'],['check','Check a creative']].map(x=>`<button class="${gTab===x[0]?'on':''}" onclick="gTab='${x[0]}';render()">${x[1]}</button>`).join('')}</div>${body}`;
+};
+function addRule(){const tx=$('rtext').value.trim();if(!tx)return;S.rules.push({id:uid(),cat:$('rcat').value.trim()||'General',text:tx});save();render()}
+function delRule(id){S.rules=S.rules.filter(r=>r.id!==id);save();render()}
+function loadChk(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>shrink(r.result,900,u=>{chkImg=u;chkRes=null;render()});r.readAsDataURL(f)}
+function runChk(){chkRes='loading';render();setTimeout(()=>{
+  const verdicts={'Logo':['pass','RC logo found top-left with good clear space.'],'Colour':['review','Background is close to PS blue but slightly lighter. Confirm against the key visual.'],'Typography':['pass','Two typefaces used; headline is about 2.6× body size.'],'Mandatory info':['fail','Date and venue found. Registration link or QR is missing.'],'Imagery':['pass','Photo matches an approved Library image.'],'Tone':['pass','Warm, inviting copy. No hard-sell words found.'],'Language':['review','"Smilescape" appears without the final "s" once. Check spelling.']};
+  chkRes=S.rules.map(r=>{const v=verdicts[r.cat]||['review','Needs a human look.'];return {r,v:v[0],why:v[1]}});
+  // second logo rule
+  chkRes.forEach(x=>{if(/lockup/.test(x.r.text)){x.v=chkEv==='Smilescapes'?'pass':'na';x.why=chkEv==='Smilescapes'?'"Smilescapes by Project Smilestones" lockup present bottom-right.':'Not applicable to this event.'}});
+  render()},1400)}
+function resView(){if(chkRes==='loading')return `<div class="empty">Reading the creative and checking each guideline…</div>`;
+  const c={pass:0,fail:0,review:0};chkRes.forEach(x=>c[x.v]!==undefined&&c[x.v]++);
+  const st={pass:['✓','ok'],fail:['✕','bad'],review:['!','warn'],na:['–','']};
+  return `<div class="grid" style="gap:10px"><div class="row between"><h3>Result</h3><span class="pill">Demo result</span></div>
+  <div class="row"><span class="pill ok">${c.pass} passed</span><span class="pill bad">${c.fail} to fix</span><span class="pill warn">${c.review} to review</span></div>
+  <div>${chkRes.map(x=>`<div class="res"><span class="ri" style="background:var(--${st[x.v][1]||'sunk'}-soft,var(--sunk));color:var(--${st[x.v][1]||'ink-3'})">${st[x.v][0]}</span><div><b style="font-size:.9rem">${esc(x.r.cat)}</b> <span class="muted" style="font-size:.86rem">· ${esc(x.r.text)}</span><div style="font-size:.88rem;margin-top:2px">${esc(x.why)}</div></div></div>`).join('')}</div>
+  <div class="note">${ic('info')}<div>Prototype: these findings are sample output. In the full app, AI reads the creative and checks it against your live guidelines.</div></div></div>`}
+
+/* templates */
+let tplType='smilescapes';
+V.templates=()=>{
+  if(!isAdmin()) return V.home();
+  const rows=[...S.tpl[tplType]].sort((a,b)=>a.o-b.o);
+  return `<div><div class="eyebrow">Admin · back-calculation norms</div><h1>${t('Templates')}</h1></div>
+  <div class="note">${ic('info')}<div>Each event type has its own task list. “Days from event” sets the default due date (−13 means 13 days before). New events use these norms. Existing events are not changed.</div></div>
+  <div class="row"><select id="tplt" onchange="tplType=this.value;render()" style="width:auto">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${k===tplType?'selected':''}>${v.label}</option>`).join('')}</select><span class="faint">${rows.length} tasks · starts ${Math.abs(Math.min(...rows.map(r=>r.o)))} days before</span><div style="flex:1"></div><button class="btn pri" onclick="addTplRow()">${ic('plus')}Add task</button></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Days from event</th><th>Activity</th><th>Department</th><th>Collateral</th><th>Lead</th><th>Support</th><th></th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><input type="number" id="to-${r.id}" value="${r.o}" style="width:80px" onchange="tplSet('${r.id}','o',+this.value)"></td>
+   <td><input type="text" id="tt-${r.id}" value="${esc(r.t)}" style="min-width:220px" onchange="tplSet('${r.id}','t',this.value)"></td>
+   <td><select id="td-${r.id}" onchange="tplSet('${r.id}','dept',this.value)">${DEPTS.map(d=>`<option ${d===r.dept?'selected':''}>${d}</option>`).join('')}</select></td>
+   <td><input type="text" id="tc-${r.id}" value="${esc(r.col)}" style="width:140px" onchange="tplSet('${r.id}','col',this.value)"></td>
+   <td><select id="tl-${r.id}" onchange="tplSet('${r.id}','l1',this.value)">${TEAM.map(d=>`<option ${d===r.l1?'selected':''}>${d}</option>`).join('')}</select></td>
+   <td><select id="tl2-${r.id}" onchange="tplSet('${r.id}','l2',this.value)"><option value="">—</option>${TEAM.map(d=>`<option ${d===r.l2?'selected':''}>${d}</option>`).join('')}</select></td>
+   <td><button class="btn ghost sm" onclick="S.tpl[tplType]=S.tpl[tplType].filter(x=>x.id!=='${r.id}');save();render()">Remove</button></td></tr>`).join('')}
+  </tbody></table></div>`;
+};
+function tplSet(id,k,v){S.tpl[tplType].find(r=>r.id===id)[k]=v;save();if(k==='o')render()}
+function addTplRow(){S.tpl[tplType].push({id:uid(),t:'New task',dept:DEPTS[0],col:'',x:'External',l1:'Shweta',l2:'',o:-7});save();render()}
+
+/* ---------- modal / toast / render ---------- */
+const $=id=>document.getElementById(id);
+function modal(html,wide){closeModal();const d=document.createElement('div');d.className='scrim';d.id='scrim';d.innerHTML=`<div class="modal ${wide?'wide':''}" role="dialog" aria-modal="true">${html}</div>`;d.onclick=e=>{if(e.target===d)closeModal()};document.body.appendChild(d);const f=d.querySelector('input,select,textarea');if(f)f.focus()}
+function closeModal(){const m=$('scrim');if(m)m.remove()}
+let tt;function toast(m){let el=$('toast');if(!el){el=document.createElement('div');el.id='toast';el.className='toast';document.body.appendChild(el)}el.textContent=m;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,2200)}
+function resetDemo(){try{localStorage.removeItem(KEY)}catch(e){}seed();closeModal();render();toast('Sample data restored')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+const CRUMB={home:'Home',events:'Events',event:'Events',calendar:'Calendar',expenses:'Expenses & vendors',budget:'Budget',ideas:'Idea Bank',moments:'Our Moments',library:'Library',guidelines:'Creative guidelines',templates:'Templates'};
+function render(){
+  document.documentElement.lang=S.lang==='gu'?'gu':'en';
+  if(S.view==='submit'){$('root').innerHTML=V.submit();return}
+  const v=V[S.view]?S.view:'home';
+  $('root').innerHTML=shell(V[v](), v==='event'?esc((evById(S.ev)||{}).name||''):t(CRUMB[v]));
+}
+load();
+if(location.hash.replace('#','')==='submit') S.view='submit';
+else if(S.view==='submit') S.view='home';
+render();
+</script>
