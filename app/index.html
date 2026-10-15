@@ -324,7 +324,7 @@ const RPL_ROWS=[
 ];
 
 /* ---------- state ---------- */
-const KEY='gennext-events-v1';
+const KEY='gennext-events-v2';
 let S;
 function seed(){
   const tpl={};
@@ -332,9 +332,10 @@ function seed(){
   for(const k of ['prem','anand','sarvarpan','guru','paryushan']) tpl[k]=RC_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
   tpl.rpl=RPL_ROWS.map(r=>({id:uid(),t:r[0],dept:r[1],col:r[2],x:r[3],l1:r[4],l2:r[5],o:r[6]}));
   const events=[
+   {id:'e0',type:'smilescapes',name:'Smilescapes · 26 Sep',date:'2026-09-26',venue:'Mumbai'},
    {id:'e1',type:'smilescapes',name:'Smilescapes · Cycling by the Sea',date:'2026-10-10',venue:'Marine Drive → Breach Candy, Mumbai'},
    {id:'e2',type:'smilescapes',name:'Smilescapes · 31 Oct',date:'2026-10-31',venue:'To be finalised, Mumbai'},
-   {id:'e3',type:'prem',name:'Prem Mahotsav 2026',date:'2026-12-18',venue:'RC, Khopoli'},
+   {id:'e3',type:'prem',name:'Prem Mahotsav 2026',date:'2026-12-31',venue:'RC, Khopoli'},
    {id:'e4',type:'rpl',name:'RPL 2027',date:'2027-01-23',venue:'RC grounds, Khopoli'},
    {id:'e5',type:'anand',name:'Anand Mahotsav 2027',date:'2027-02-17',venue:'RC, Khopoli'},
    {id:'e6',type:'sarvarpan',name:'Sarvarpan Divas 2027',date:'2027-05-30',venue:'RC, Khopoli'},
@@ -437,13 +438,23 @@ function seed(){
   let k=0;
   for(const t of S.tasks){k++;
     const d=diff(t.due,TODAY);
-    if(t.ev==='e1') t.st='Closed';
+    if(t.ev==='e1'||t.ev==='e0') t.st='Closed';
     else if(d<-3) t.st=k%7===0?'WIP':'Closed';
     else if(d<0) t.st=k%3===0?'Closed':'WIP';
     else if(d<6) t.st=k%2?'WIP':'To start';
     else t.st='To start';
     if(t.st==='Closed'&&/Marketing - Social/.test(t.dept)) t.st=k%2?'Live':'Closed';
   }
+  // Prem Mahotsav: keep upcoming template tasks, replace the past ones with the real current work
+  S.tasks=S.tasks.filter(t=>!(t.ev==='e3'&&t.due<TODAY));
+  for(const t of S.tasks) if(t.ev==='e3') t.st='To start';
+  const pm=(t,dept,col,l1,l2,due,st,note)=>S.tasks.push({id:uid(),ev:'e3',t,dept,col,x:'Internal',l1,l2,o:diff(due,'2026-12-31'),due,edited:false,st,note});
+  pm('Main creative – approval','Design','Key visual','Saransh','Devanshi','2026-10-17','WIP','Submitted to the events team. Approval due by 17 Oct.');
+  pm('Dossier','Design','Dossier','Saransh','Devanshi','2026-10-24','To start','Starts after the main creative is approved.');
+  pm('Thumbnails','Design','Thumbnails','Saransh','Devanshi','2026-10-24','To start','Starts after the main creative is approved.');
+  pm('Opening ceremony – show concepts to Achira','Programming','Concept','Shweta','Natasha','2026-10-17','WIP','Brainstorming stage. Present to Achira and get her approval.');
+  pm('Opening ceremony – finalise core idea','Programming','Concept','Shweta','Natasha','2026-10-20','To start','');
+  pm('Opening ceremony – GR (general rehearsal)','Programming','Rehearsal','Shweta','Natasha','2026-11-30','To start','Date to be confirmed.');
 }
 function genTasks(e){
   for(const r of S.tpl[e.type]) S.tasks.push({id:uid(),ev:e.id,t:r.t,dept:r.dept,col:r.col,x:r.x,l1:r.l1,l2:r.l2,o:r.o,due:addDays(e.date,r.o),edited:false,st:'To start',note:''});
@@ -459,17 +470,18 @@ function seedAnnual(){const L=[];
   r(3,'Project Smilestones','Online promotions','WhatsApp bulk message','Quarterly',60000,'messages',0.7,42000,14000,70);
   r(3,'Project Smilestones','Online promotions','META Ads','Campaign based',0,'',0,0,96000,0);
   r(3,'Project Smilestones','Online promotions','Content shoot & edit','Campaign based',20,'campaigns',5000,100000,70000,0);
-  r(4,'Events','—','Petty expenses (Adbhutam club idea)','One-time',0,'',0,0,20000,20000);
+  r(2,'Project Smilestones','Offline promotions','Smilescapes event costs (food, cycles, props)','Per event',0,'',0,0,0,0);
+  r(4,'Events','—','Petty expenses (Adbhutam club idea)','One-time',0,'',0,0,20000,0);
   const P=[];const it=(item,month,title,ev,qty,unit,amt)=>{const l=L.find(x=>x.item===item);P.push({id:uid(),line:l.id,month,title,ev:ev||'',qty,unit,amt:amt??Math.round(qty*unit)})};
   it('Envato Elements','2026-04','Annual subscription','',1,20000);
-  ['2026-10','2026-10','2027-01','2027-02','2027-03'].forEach((m,i)=>it('Experience giveaways',m,'Giveaways – '+['Smilescapes · Cycling by the Sea','Smilescapes · 31 Oct','Smilescapes · Jan','Smilescapes · Feb','Smilescapes · Mar'][i],i===0?'e1':i===1?'e2':'',100,15));
+  ['2026-09','2026-10','2026-10','2027-01','2027-02'].forEach((m,i)=>it('Experience giveaways',m,'Giveaways – '+['Smilescapes · 26 Sep','Smilescapes · Cycling by the Sea','Smilescapes · 31 Oct','Smilescapes · Jan','Smilescapes · Feb'][i],['e0','e1','e2','',''][i],100,15));
   it('Plant saplings','2026-06','Saplings – monsoon Smilescape','',25,600);it('Plant saplings','2026-08','Saplings – Independence Day Smilescape','',25,600);
   it('Marketing material','2026-10','Standees & flyers – Oct Smilescapes','e1',10,500);it('Marketing material','2026-12','Standees & flyers – Dec drive','',15,500);
   ['04','05','06','07','08','09','10','11','12','01','02','03'].forEach(m=>{const y=+m>=4?2026:2027;it('WhatsApp',`${y}-${m}`,'Monthly campaign – '+MON[+m-1],m==='10'?'e1':'',1,2068)});
   [['2026-06','Q1'],['2026-09','Q2'],['2026-12','Q3'],['2027-03','Q4']].forEach(([m,q])=>it('WhatsApp bulk message',m,q+' bulk send – 15,000 messages','',15000,0.7));
   ['2026-05','2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12','2027-01','2027-02'].forEach(m=>it('Content shoot & edit',m,'Reels – 2 campaigns · '+MON[+m.slice(5)-1],m==='2026-10'?'e1':'',2,5000));
-  return {v:4,plan:P,title:'Gennext Budget Summary',fy:'2026-27',period:'Apr 2026 – Mar 2027',submitted:'3 May 2026 · Shweta Jain',approvedTotal:250000,approvedOn:'5 May 2026',lines:L}}
-function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(!S.annual||S.annual.v!==4)S.annual=seedAnnual();return}}catch(e){} seed()}
+  return {v:5,secAct:{3:18065},plan:P,title:'Gennext Budget Summary',fy:'2026-27',period:'Apr 2026 – Mar 2027',submitted:'3 May 2026 · Shweta Jain',approvedTotal:250000,approvedOn:'5 May 2026',lines:L}}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){S=JSON.parse(raw);if(!S.annual||S.annual.v!==5)S.annual=seedAnnual();return}}catch(e){} seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* ---------- i18n (labels) ---------- */
@@ -618,7 +630,7 @@ V.event=()=>{
       body=filters+groups.map(([g,fn])=>{const rows=f.filter(fn);if(!rows.length)return '';
         return `<div class="grid" style="gap:8px"><div class="row between"><h3>${g}</h3><span class="faint num">${rows.filter(done).length}/${rows.length} done</span></div>
         <div class="tbl-wrap"><table><thead><tr><th>Activity</th><th>Norm</th><th>Due</th><th>Department</th><th>Collateral</th><th>Lead</th><th>Status</th></tr></thead><tbody>
-        ${rows.map(x=>`<tr><td style="min-width:220px"><b style="font-weight:600">${esc(x.t)}</b>${x.x==='Internal'?' <span class="pill" style="font-size:.68rem">Internal</span>':''}</td>
+        ${rows.map(x=>`<tr><td style="min-width:220px"><b style="font-weight:600">${esc(x.t)}</b>${x.note?`<div class="faint" style="font-size:.78rem">${esc(x.note)}</div>`:''}${x.x==='Internal'?' <span class="pill" style="font-size:.68rem">Internal</span>':''}</td>
           <td class="faint num">${dLabel(x.o)}</td>
           <td><div class="row" style="gap:4px;flex-wrap:nowrap"><input type="date" id="due-${x.id}" value="${x.due}" onchange="setDue('${x.id}',this.value)" ${isAdmin()||x.l1===ME()?'':'disabled'} style="${x.due<TODAY&&!done(x)?'border-color:var(--bad);color:var(--bad)':''}">${x.edited?`<span class="pill gd" title="Changed by hand">edited</span>`:''}</div></td>
           <td class="muted">${esc(x.dept)}</td><td class="muted">${esc(x.col)}</td>
@@ -832,7 +844,7 @@ function savePlan(lid){(S.annual.plan=S.annual.plan||[]).push({id:uid(),line:lid
 const VERT=type=>type==='smilescapes'?'Project Smilestones':'Events';
 const verts=()=>[...new Set(S.annual.lines.map(l=>l.vertical))];
 function autoLine(x){const e=evById(x.ev);if(!e)return null;const v=VERT(e.type),h=(x.head||'').toLowerCase().trim();
-  return S.annual.lines.find(l=>(l.vertical===v||l.vertical==='ALL')&&(l.item.toLowerCase()===h||l.nature.toLowerCase()===h))||null}
+  return S.annual.lines.find(l=>(l.vertical===v||l.vertical==='ALL')&&(l.item.toLowerCase()===h||l.nature.toLowerCase()===h))||(e.type==='smilescapes'?S.annual.lines.find(l=>/^Smilescapes event costs/.test(l.item)):null)||null}
 function lineOf(x){if(x.line==='none')return null;if(x.pi){const p=planById(x.pi);if(p)return S.annual.lines.find(l=>l.id===p.line)}if(x.line)return S.annual.lines.find(l=>l.id===x.line)||autoLine(x);return autoLine(x)}
 const planById=id=>(S.annual.plan||[]).find(p=>p.id===id);
 function piOf(x){if(x.pi)return planById(x.pi)||null;const l=lineOf(x);if(!l)return null;return (S.annual.plan||[]).find(p=>p.line===l.id&&p.ev&&p.ev===x.ev)||null}
@@ -929,6 +941,7 @@ function reportRows(){const A=S.annual;const secOf=l=>l.sec||verts().indexOf(l.v
   for(const sn of secs){const ls=A.lines.filter(l=>secOf(l)===sn);let t={fy26:0,act:0,plan:0,used:0};let pv='',pn='';
     ls.forEach(l=>{const u=usedOf(l);out.push({k:'line',sn:pv?'':sn,v:l.vertical===pv?'':l.vertical,n:l.nature==='—'||l.nature===pn?'':l.nature,item:l.item,freq:l.freq,fy26:l.fy26,act:l.fy26act,plan:l.approved,unit:l.qty?`${l.qty.toLocaleString('en-IN')} ${l.unitLbl}`:'',per:l.unit||'',used:u,rem:l.approved-u});pv=l.vertical;pn=l.nature;
       t.fy26+=l.fy26;t.act+=l.fy26act;t.plan+=l.approved;t.used+=u});
+    if(A.secAct&&A.secAct[sn]!=null)t.act=A.secAct[sn];
     out.push({k:'tot',item:`TOTAL SECTION ${sn}`,...t,rem:t.plan-t.used});for(const k in g)g[k]+=t[k]}
   out.push({k:'grand',item:'GRAND TOTAL',...g,rem:g.plan-g.used});return out}
 function annualReport(){const A=S.annual;const {appr,planned,used,un}=annualTotals();const R=reportRows();const n=v=>v===''||v==null?'':typeof v==='number'?v.toLocaleString('en-IN'):esc(v);
